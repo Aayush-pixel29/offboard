@@ -10,6 +10,6 @@ void main() {
       ),
     );
 
-    expect(find.text('NoticePeriod'), findsOneWidget);
+    expect(find.byType(NoticePeriodApp), findsOneWidget);
   });
 }

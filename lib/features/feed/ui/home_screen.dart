@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../providers/feed_provider.dart';
-import '../../../core/services/cache_service.dart';
 import '../../auth/ui/auth_screen.dart';
 import 'exit_post_card.dart';
 import 'post_detail_sheet.dart';
@@ -246,11 +245,15 @@ class HomeScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        session.isVerified ? 'Verified Corporate Session' : 'Community Guest Session',
+                        session.name ?? (session.isVerified ? 'Verified Corporate Session' : 'Community Guest Session'),
                         style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                       ),
                       Text(
-                        session.isVerified ? 'Domain: ${session.companyDomain}' : 'Unverified Visitor',
+                        session.isGoogleAuth
+                            ? (session.email ?? 'Google Account')
+                            : session.isVerified
+                                ? 'Domain: ${session.companyDomain}'
+                                : 'Unverified Visitor',
                         style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                       ),
                     ],

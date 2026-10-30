@@ -68,22 +68,45 @@ class ProfileScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Container(
-                      width: 52,
-                      height: 52,
+                      width: 54,
+                      height: 54,
                       decoration: BoxDecoration(
-                        color: session.isVerified ? AppColors.emeraldBg : AppColors.borderLight,
+                        color: session.isGoogleAuth
+                            ? const Color(0xFFEFF6FF)
+                            : session.isVerified
+                                ? AppColors.emeraldBg
+                                : AppColors.borderLight,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: session.isVerified
-                              ? AppColors.emeraldVerified.withValues(alpha: 0.3)
-                              : AppColors.border,
+                          color: session.isGoogleAuth
+                              ? const Color(0xFF3B82F6).withValues(alpha: 0.3)
+                              : session.isVerified
+                                  ? AppColors.emeraldVerified.withValues(alpha: 0.3)
+                                  : AppColors.border,
                         ),
                       ),
-                      child: Icon(
-                        session.isVerified ? LucideIcons.shieldCheck : LucideIcons.user,
-                        color: session.isVerified ? AppColors.emeraldVerified : AppColors.textPrimary,
-                        size: 26,
-                      ),
+                      child: session.avatarUrl != null && session.avatarUrl!.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.network(
+                                session.avatarUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(LucideIcons.user, size: 26, color: AppColors.primary),
+                              ),
+                            )
+                          : Icon(
+                              session.isGoogleAuth
+                                  ? LucideIcons.globe
+                                  : session.isVerified
+                                      ? LucideIcons.shieldCheck
+                                      : LucideIcons.user,
+                              color: session.isGoogleAuth
+                                  ? const Color(0xFF3B82F6)
+                                  : session.isVerified
+                                      ? AppColors.emeraldVerified
+                                      : AppColors.textPrimary,
+                              size: 26,
+                            ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -94,25 +117,33 @@ class ProfileScreen extends ConsumerWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  session.alias,
+                                  session.name ?? session.alias,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              if (session.isVerified)
+                              if (session.isGoogleAuth)
+                                const Icon(LucideIcons.badgeCheck, size: 16, color: Color(0xFF3B82F6))
+                              else if (session.isVerified)
                                 const Icon(LucideIcons.badgeCheck, size: 16, color: AppColors.emeraldVerified),
                             ],
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            session.isVerified
-                                ? 'Verified Corporate Entity: ${session.companyDomain}'
-                                : 'Community Observer (Unverified Guest)',
+                            session.isGoogleAuth
+                                ? (session.email ?? 'Google Authenticated Profile')
+                                : session.isVerified
+                                    ? 'Verified Corporate Entity: ${session.companyDomain}'
+                                    : 'Community Observer (Unverified Guest)',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: session.isVerified ? AppColors.emeraldVerified : AppColors.textSecondary,
+                              color: session.isGoogleAuth
+                                  ? const Color(0xFF2563EB)
+                                  : session.isVerified
+                                      ? AppColors.emeraldVerified
+                                      : AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -120,6 +151,31 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                if (session.name != null) ...[
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(LucideIcons.shield, size: 13, color: AppColors.emeraldVerified),
+                        const SizedBox(width: 8),
+                        const Text('Posting Alias: ', style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary)),
+                        Expanded(
+                          child: Text(
+                            session.alias,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 10),

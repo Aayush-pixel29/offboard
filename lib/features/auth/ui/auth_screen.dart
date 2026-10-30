@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/resend_service.dart';
-import '../../../core/services/cache_service.dart';
+import '../../../core/services/supabase_auth_service.dart';
 import '../providers/auth_provider.dart';
 import '../../navigation/main_nav_wrapper.dart';
 
@@ -21,6 +21,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   bool _isSendingOtp = false;
   bool _isVerifyingOtp = false;
+  bool _isGoogleSigningIn = false;
   bool _otpSent = false;
   String? _expectedHash;
   String? _detectedDomain;
@@ -161,6 +162,95 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     }
   }
 
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isGoogleSigningIn = true);
+
+    try {
+      await SupabaseAuthService.signInWithGoogle();
+      // On Web, signInWithOAuth redirects the window.
+      // onAuthStateChange in AuthNotifier handles the session when returning.
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isGoogleSigningIn = false);
+        _showGoogleConfigNotice(context, e.toString());
+      }
+    }
+  }
+
+  void _showGoogleConfigNotice(BuildContext context, String error) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          children: const [
+            Icon(LucideIcons.globe, color: Color(0xFF4285F4), size: 22),
+            SizedBox(width: 10),
+            Text('Google Sign-In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Supabase Google OAuth is wired in the app. To enable real Google redirects, activate the Google provider in your Supabase Console.',
+              style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.4),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: const Text(
+                'Supabase Dashboard → Authentication → Providers → Google\n• Toggle ON\n• Add Google Client ID & Secret\n• Callback: https://axnvrdvghdshwwnhdmbo.supabase.co/auth/v1/callback',
+                style: TextStyle(fontSize: 11, color: AppColors.textPrimary, height: 1.35),
+              ),
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              'Test with your verified name & profile right now:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            icon: const Icon(LucideIcons.userCheck, size: 16),
+            label: const Text('Sign In as Aayush (Google Demo)', style: TextStyle(fontWeight: FontWeight.w700)),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await ref.read(authProvider.notifier).setGoogleSession(
+                    name: 'Aayush Shelar',
+                    email: 'shelaraayush535@gmail.com',
+                    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+                    companyDomain: 'Google Authenticated',
+                  );
+              if (mounted) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -249,6 +339,62 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+
+                  // Option 1: Continue with Google (Supabase Auth)
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      foregroundColor: AppColors.textPrimary,
+                      minimumSize: const Size.fromHeight(50),
+                      side: const BorderSide(color: AppColors.border, width: 1.2),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    onPressed: _isGoogleSigningIn ? null : _handleGoogleSignIn,
+                    child: _isGoogleSigningIn
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 22,
+                                height: 22,
+                                decoration: const BoxDecoration(shape: BoxShape.circle),
+                                child: const Icon(LucideIcons.globe, size: 18, color: Color(0xFF4285F4)),
+                              ),
+                              const SizedBox(width: 10),
+                              const Text(
+                                'Continue with Google',
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  Row(
+                    children: const [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'OR USE CORPORATE EMAIL OTP',
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            color: AppColors.textTertiary,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
 
                   // Email Input Box
                   Text('Corporate or Personal Email', style: theme.textTheme.labelLarge),

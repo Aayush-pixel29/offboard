@@ -7,6 +7,10 @@ class CacheService {
   static const String _keyUserAlias = 'np_user_alias';
   static const String _keyUserCompany = 'np_user_company';
   static const String _keyIsVerified = 'np_user_is_verified';
+  static const String _keyUserName = 'np_user_name';
+  static const String _keyUserEmail = 'np_user_email';
+  static const String _keyUserAvatar = 'np_user_avatar';
+  static const String _keyAuthMethod = 'np_auth_method';
   static const String _keyOtpCooldown = 'np_otp_cooldown_';
   static const String _keyOtpAttempts = 'np_otp_attempts';
   static const String _keyOtpLockoutUntil = 'np_otp_lockout_until';
@@ -41,11 +45,31 @@ class CacheService {
     required String alias,
     required String companyDomain,
     required bool isVerified,
+    String? name,
+    String? email,
+    String? avatarUrl,
+    String authMethod = 'otp',
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserAlias, alias);
     await prefs.setString(_keyUserCompany, companyDomain);
     await prefs.setBool(_keyIsVerified, isVerified);
+    if (name != null) {
+      await prefs.setString(_keyUserName, name);
+    } else {
+      await prefs.remove(_keyUserName);
+    }
+    if (email != null) {
+      await prefs.setString(_keyUserEmail, email);
+    } else {
+      await prefs.remove(_keyUserEmail);
+    }
+    if (avatarUrl != null) {
+      await prefs.setString(_keyUserAvatar, avatarUrl);
+    } else {
+      await prefs.remove(_keyUserAvatar);
+    }
+    await prefs.setString(_keyAuthMethod, authMethod);
   }
 
   /// Retrieve authenticated session
@@ -55,6 +79,10 @@ class CacheService {
       'alias': prefs.getString(_keyUserAlias),
       'company': prefs.getString(_keyUserCompany),
       'isVerified': prefs.getBool(_keyIsVerified) ?? false,
+      'name': prefs.getString(_keyUserName),
+      'email': prefs.getString(_keyUserEmail),
+      'avatarUrl': prefs.getString(_keyUserAvatar),
+      'authMethod': prefs.getString(_keyAuthMethod) ?? 'otp',
     };
   }
 
@@ -64,6 +92,10 @@ class CacheService {
     await prefs.remove(_keyUserAlias);
     await prefs.remove(_keyUserCompany);
     await prefs.remove(_keyIsVerified);
+    await prefs.remove(_keyUserName);
+    await prefs.remove(_keyUserEmail);
+    await prefs.remove(_keyUserAvatar);
+    await prefs.remove(_keyAuthMethod);
   }
 
   /// Cybersecurity: OTP Rate Limiting (60-second cooldown per email)
