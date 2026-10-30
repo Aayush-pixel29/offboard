@@ -137,6 +137,7 @@ class CommunityHubScreen extends ConsumerWidget {
   void _showAliasSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),

@@ -16,7 +16,6 @@ class _ResignationGeneratorScreenState extends State<ResignationGeneratorScreen>
   final _managerController = TextEditingController(text: 'Hiring Manager');
 
   int _noticeDays = 90;
-  String _tone = 'Professional & Firm';
   bool _requestEarlyRelease = true;
 
   String _generateLetter() {

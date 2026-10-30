@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/config/supabase_config.dart';
 import 'core/theme/app_colors.dart';
@@ -26,11 +24,8 @@ void main() async {
   }
 
   runApp(
-    ProviderScope(
-      child: DevicePreview(
-        enabled: !kReleaseMode && !kIsWeb,
-        builder: (context) => const NoticePeriodApp(),
-      ),
+    const ProviderScope(
+      child: NoticePeriodApp(),
     ),
   );
 }
@@ -45,8 +40,6 @@ class NoticePeriodApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Offboard',
       debugShowCheckedModeBanner: false,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
       theme: AppTheme.lightTheme,
       home: session.isLoading
           ? const Scaffold(

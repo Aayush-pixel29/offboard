@@ -32,46 +32,50 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border, width: 1)),
-        ),
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          backgroundColor: AppColors.surface,
-          elevation: 0,
-          indicatorColor: AppColors.borderLight,
-          onDestinationSelected: (index) {
-            setState(() => _currentIndex = index);
-          },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(LucideIcons.newspaper, size: 20),
-              selectedIcon: Icon(LucideIcons.newspaper, size: 20, color: AppColors.primary),
-              label: 'Exit Feed',
-            ),
-            NavigationDestination(
-              icon: Icon(LucideIcons.users, size: 20),
-              selectedIcon: Icon(LucideIcons.users, size: 20, color: AppColors.primary),
-              label: 'Cohorts',
-            ),
-            NavigationDestination(
-              icon: Icon(LucideIcons.barChart2, size: 20),
-              selectedIcon: Icon(LucideIcons.barChart2, size: 20, color: AppColors.primary),
-              label: 'Hall of Shame',
-            ),
-            NavigationDestination(
-              icon: Icon(LucideIcons.fileText, size: 20),
-              selectedIcon: Icon(LucideIcons.fileText, size: 20, color: AppColors.primary),
-              label: 'Exit Toolkit',
-            ),
-            NavigationDestination(
-              icon: Icon(LucideIcons.user, size: 20),
-              selectedIcon: Icon(LucideIcons.user, size: 20, color: AppColors.primary),
-              label: 'Profile',
-            ),
-          ],
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+          ),
+          child: NavigationBar(
+            height: 64,
+            selectedIndex: _currentIndex,
+            backgroundColor: AppColors.surface,
+            elevation: 0,
+            indicatorColor: AppColors.borderLight,
+            onDestinationSelected: (index) {
+              setState(() => _currentIndex = index);
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(LucideIcons.newspaper, size: 20),
+                selectedIcon: Icon(LucideIcons.newspaper, size: 20, color: AppColors.primary),
+                label: 'Exit Feed',
+              ),
+              NavigationDestination(
+                icon: Icon(LucideIcons.users, size: 20),
+                selectedIcon: Icon(LucideIcons.users, size: 20, color: AppColors.primary),
+                label: 'Cohorts',
+              ),
+              NavigationDestination(
+                icon: Icon(LucideIcons.barChart2, size: 20),
+                selectedIcon: Icon(LucideIcons.barChart2, size: 20, color: AppColors.primary),
+                label: 'Hall of Shame',
+              ),
+              NavigationDestination(
+                icon: Icon(LucideIcons.fileText, size: 20),
+                selectedIcon: Icon(LucideIcons.fileText, size: 20, color: AppColors.primary),
+                label: 'Exit Toolkit',
+              ),
+              NavigationDestination(
+                icon: Icon(LucideIcons.user, size: 20),
+                selectedIcon: Icon(LucideIcons.user, size: 20, color: AppColors.primary),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );

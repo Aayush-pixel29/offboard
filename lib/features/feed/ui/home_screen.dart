@@ -178,6 +178,7 @@ class HomeScreen extends ConsumerWidget {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
+                                useSafeArea: true,
                                 backgroundColor: Colors.transparent,
                                 builder: (_) => PostDetailSheet(post: post),
                               );
@@ -202,6 +203,7 @@ class HomeScreen extends ConsumerWidget {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
+            useSafeArea: true,
             backgroundColor: Colors.transparent,
             builder: (_) => const LogExitSheet(),
           );
@@ -217,6 +219,7 @@ class HomeScreen extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
