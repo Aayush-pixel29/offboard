@@ -1,0 +1,31 @@
+name: notice_period
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^3.4.3
+  supabase_flutter: ^2.18.3
+  shared_preferences: ^2.5.6
+  crypto: ^3.0.8
+  google_fonts: ^9.0.0
+  lucide_icons_flutter: ^3.1.9
+  device_preview: ^1.2.0
+  http: ^1.2.2
+  go_router: ^18.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
