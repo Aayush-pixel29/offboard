@@ -28,7 +28,7 @@ void main() async {
   runApp(
     ProviderScope(
       child: DevicePreview(
-        enabled: !kReleaseMode,
+        enabled: !kReleaseMode && !kIsWeb,
         builder: (context) => const NoticePeriodApp(),
       ),
     ),
@@ -43,7 +43,7 @@ class NoticePeriodApp extends ConsumerWidget {
     final session = ref.watch(authProvider);
 
     return MaterialApp(
-      title: 'NoticePeriod',
+      title: 'Offboard',
       debugShowCheckedModeBanner: false,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
