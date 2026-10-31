@@ -28,6 +28,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -37,40 +38,40 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         child: Container(
           decoration: const BoxDecoration(
             color: AppColors.surface,
-            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1.2)),
           ),
           child: NavigationBar(
             height: 64,
             selectedIndex: _currentIndex,
             backgroundColor: AppColors.surface,
             elevation: 0,
-            indicatorColor: AppColors.borderLight,
+            indicatorColor: AppColors.primary.withValues(alpha: 0.18),
             onDestinationSelected: (index) {
               setState(() => _currentIndex = index);
             },
             destinations: const [
               NavigationDestination(
-                icon: Icon(LucideIcons.newspaper, size: 20),
-                selectedIcon: Icon(LucideIcons.newspaper, size: 20, color: AppColors.primary),
-                label: 'Exit Feed',
+                icon: Icon(LucideIcons.sparkles, size: 20, color: AppColors.textSecondary),
+                selectedIcon: Icon(LucideIcons.sparkles, size: 20, color: AppColors.primary),
+                label: 'Stories',
               ),
               NavigationDestination(
-                icon: Icon(LucideIcons.users, size: 20),
+                icon: Icon(LucideIcons.users, size: 20, color: AppColors.textSecondary),
                 selectedIcon: Icon(LucideIcons.users, size: 20, color: AppColors.primary),
-                label: 'Cohorts',
+                label: 'Circles',
               ),
               NavigationDestination(
-                icon: Icon(LucideIcons.barChart2, size: 20),
-                selectedIcon: Icon(LucideIcons.barChart2, size: 20, color: AppColors.primary),
-                label: 'Hall of Shame',
+                icon: Icon(LucideIcons.trendingUp, size: 20, color: AppColors.textSecondary),
+                selectedIcon: Icon(LucideIcons.trendingUp, size: 20, color: AppColors.primary),
+                label: 'Trends',
               ),
               NavigationDestination(
-                icon: Icon(LucideIcons.fileText, size: 20),
-                selectedIcon: Icon(LucideIcons.fileText, size: 20, color: AppColors.primary),
-                label: 'Exit Toolkit',
+                icon: Icon(LucideIcons.briefcase, size: 20, color: AppColors.textSecondary),
+                selectedIcon: Icon(LucideIcons.briefcase, size: 20, color: AppColors.primary),
+                label: 'Toolkit',
               ),
               NavigationDestination(
-                icon: Icon(LucideIcons.user, size: 20),
+                icon: Icon(LucideIcons.user, size: 20, color: AppColors.textSecondary),
                 selectedIcon: Icon(LucideIcons.user, size: 20, color: AppColors.primary),
                 label: 'Profile',
               ),

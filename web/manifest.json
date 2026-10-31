@@ -1,11 +1,11 @@
 {
-    "name": "Offboard - Corporate Exit Network",
+    "name": "Offboard - Workplace Stories & Circles",
     "short_name": "Offboard",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FBFBFD",
-    "theme_color": "#0F172A",
-    "description": "Anonymous corporate exit autopsies, layoff radar, and 90-day notice period survival.",
+    "background_color": "#090D16",
+    "theme_color": "#090D16",
+    "description": "Real workplace stories, career transitions, peer advice, and verified job referrals.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

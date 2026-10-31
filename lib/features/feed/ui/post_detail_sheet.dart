@@ -3,14 +3,53 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/exit_post.dart';
 
-class PostDetailSheet extends StatelessWidget {
+class PostDetailSheet extends StatefulWidget {
   final ExitPost post;
 
   const PostDetailSheet({super.key, required this.post});
 
   @override
+  State<PostDetailSheet> createState() => _PostDetailSheetState();
+}
+
+class _PostDetailSheetState extends State<PostDetailSheet> {
+  final _commentController = TextEditingController();
+  final List<Map<String, String>> _comments = [
+    {
+      'author': 'Frontend Lead • Ex-Cognizant',
+      'time': '1h ago',
+      'text': 'Experienced the exact same PTO cancellation last year. Kudos to you for speaking up and making the jump.',
+    },
+    {
+      'author': 'Staff QA • Ex-Infosys',
+      'time': '3h ago',
+      'text': 'Setting clear boundaries on weekend overtime is crucial. Your health comes before any release milestone.',
+    },
+  ];
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _handleAddComment() {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _comments.insert(0, {
+        'author': 'You (Community Member)',
+        'time': 'Just now',
+        'text': text,
+      });
+      _commentController.clear();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final post = widget.post;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -21,17 +60,18 @@ class PostDetailSheet extends StatelessWidget {
           decoration: const BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1.4)),
           ),
           child: Column(
             children: [
               // Pull Handle
               const SizedBox(height: 12),
               Container(
-                width: 40,
-                height: 4,
+                width: 44,
+                height: 4.5,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.borderBold,
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 12),
@@ -41,21 +81,23 @@ class PostDetailSheet extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    Text(
-                      'Exit Autopsy',
-                      style: theme.textTheme.titleMedium?.copyWith(
+                    const Text(
+                      'Workplace Story',
+                      style: TextStyle(
+                        fontSize: 17,
                         fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(LucideIcons.x, size: 20),
+                      icon: const Icon(LucideIcons.x, size: 20, color: AppColors.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
               ),
-              const Divider(),
+              const Divider(color: AppColors.borderLight),
 
               Expanded(
                 child: ListView(
@@ -65,47 +107,52 @@ class PostDetailSheet extends StatelessWidget {
                     // Company & Role Header
                     Text(
                       post.companyName,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${post.role} • ${post.tenureYears} Years Served',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      '${post.role} • ${post.tenureYears} Years Tenure',
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
+                        fontSize: 13.5,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Primary Reason Alert Box
+                    // Primary Reason Pill
                     Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.redFlagBg,
+                        color: AppColors.surfaceElevated,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.2)),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Row(
                         children: [
-                          const Icon(LucideIcons.alertTriangle, color: AppColors.redFlag, size: 18),
+                          const Icon(LucideIcons.info, color: AppColors.primary, size: 16),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'Trigger: ${post.primaryReason}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: AppColors.redFlag,
+                              'Reason: ${post.primaryReason}',
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w700,
+                                fontSize: 13,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    // 4-Card Stats Grid
+                    // Key Metrics Grid
                     Row(
                       children: [
                         Expanded(
@@ -115,7 +162,7 @@ class PostDetailSheet extends StatelessWidget {
                             icon: LucideIcons.calendar,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _DetailStatCard(
                             label: 'Notice Served',
@@ -123,22 +170,10 @@ class PostDetailSheet extends StatelessWidget {
                             icon: LucideIcons.clock,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: _DetailStatCard(
-                            label: 'Appraisal Got',
-                            value: '1.8%',
-                            icon: LucideIcons.percent,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _DetailStatCard(
-                            label: 'Next Hike',
+                            label: 'Next Offer',
                             value: '+${post.hikePercent}%',
                             valueColor: AppColors.emeraldVerified,
                             icon: LucideIcons.trendingUp,
@@ -146,43 +181,49 @@ class PostDetailSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 22),
 
                     // The Story
-                    Text(
-                      'The Turning Point',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    const Text(
+                      'The Experience',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       post.storyBody,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textPrimary,
-                        height: 1.6,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14.5,
+                        height: 1.55,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 22),
 
-                    // Notice Period Survival Strategy Callout
+                    // Practical Advice Card
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.amberBg,
+                        color: AppColors.surfaceElevated,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.amberNotice.withValues(alpha: 0.3)),
+                        border: Border.all(color: AppColors.borderBold),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: [
-                              const Icon(LucideIcons.shieldAlert, color: AppColors.amberNotice, size: 18),
-                              const SizedBox(width: 8),
+                            children: const [
+                              Icon(LucideIcons.lightbulb, color: AppColors.amberNotice, size: 16),
+                              SizedBox(width: 8),
                               Text(
-                                'Notice Period Survival Strategy',
-                                style: theme.textTheme.labelLarge?.copyWith(
+                                'Advice for Peers',
+                                style: TextStyle(
                                   color: AppColors.amberNotice,
                                   fontWeight: FontWeight.w800,
+                                  fontSize: 13,
                                 ),
                               ),
                             ],
@@ -190,207 +231,119 @@ class PostDetailSheet extends StatelessWidget {
                           const SizedBox(height: 8),
                           Text(
                             post.survivalTip,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: const TextStyle(
                               color: AppColors.textPrimary,
+                              fontSize: 13,
                               height: 1.45,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
-                    // Employer Right of Reply (Section 79 Balance & Fairness)
+                    // Verified Company Response Card
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: AppColors.border),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(LucideIcons.building2, size: 16, color: AppColors.primary),
-                              ),
-                              const SizedBox(width: 10),
+                              const Icon(LucideIcons.building2, size: 16, color: AppColors.textSecondary),
+                              const SizedBox(width: 8),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Employer Right of Reply',
-                                          style: theme.textTheme.labelLarge?.copyWith(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Icon(LucideIcons.scale, size: 14, color: AppColors.textTertiary),
-                                      ],
-                                    ),
-                                    const Text(
-                                      'STATUTORY FAIRNESS • SEC 79 IT ACT COMPLIANCE',
-                                      style: TextStyle(
-                                        fontSize: 8.5,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.9,
-                                        color: AppColors.textTertiary,
-                                      ),
-                                    ),
-                                  ],
+                                child: Text(
+                                  'Company Perspectives (${post.companyName})',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
                               ),
+                              const Icon(LucideIcons.shieldCheck, size: 14, color: AppColors.emeraldVerified),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.borderLight),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'All exiting professionals are entitled to complete settlement clearance, experience letters, and gratuity transfers within statutory norms.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                              height: 1.4,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(LucideIcons.badgeCheck, size: 14, color: AppColors.emeraldVerified),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Verified People & Culture (${post.companyName})',
-                                      style: const TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.emeraldVerified,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                const Text(
-                                  'Our organization upholds fair exit settlements in compliance with statutory labor laws. All exiting staff receive complete full & final accounts within standard 45 days, along with complete gratuity clearance and EPFO service mark updates.',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                    height: 1.45,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    side: const BorderSide(color: AppColors.border),
-                                  ),
-                                  icon: const Icon(LucideIcons.flag, size: 13, color: AppColors.redFlag),
-                                  label: const Text(
-                                    'Report NDA Breach / Defamation',
-                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                                  ),
-                                  onPressed: () => _showGrievanceDialog(context, post.companyName),
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
 
-                    // Community Support & Referral Callout
-                    if (post.openToRefer) ...[
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.blueBg,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.blueSOS.withValues(alpha: 0.3)),
+                    // Comments Section
+                    Row(
+                      children: [
+                        const Icon(LucideIcons.messageCircle, size: 16, color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Community Discussion (${_comments.length})',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(LucideIcons.sparkles, color: AppColors.blueSOS, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Alumni Referral Available',
-                                    style: theme.textTheme.labelLarge?.copyWith(
-                                      color: AppColors.blueSOS,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'This author verified their new employer and offered referral connections for laid-off peers.',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontSize: 11.5,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Add Comment Bar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _commentController,
+                            style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                            decoration: InputDecoration(
+                              hintText: 'Share advice or ask a question...',
+                              hintStyle: const TextStyle(fontSize: 12.5, color: AppColors.textTertiary),
+                              filled: true,
+                              fillColor: AppColors.background,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.border),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.border),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.blueSOS,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              ),
-                              onPressed: () {},
-                              child: const Text('Connect', style: TextStyle(fontSize: 12)),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
+                        const SizedBox(width: 8),
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                          ),
+                          icon: const Icon(LucideIcons.send, size: 16),
+                          onPressed: _handleAddComment,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
 
-                    Text(
-                      'Community Comments (14)',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 12),
-                    _CommentTile(
-                      role: 'Anonymous Dev @ Cognizant',
-                      time: '1h ago',
-                      comment:
-                          'Experienced the exact same PTO cancellation last year. Kudos to you for walking out.',
-                    ),
-                    _CommentTile(
-                      role: 'Senior QA @ Infosys',
-                      time: '3h ago',
-                      comment:
-                          'Never do unpaid weekend overtime. The moment you push back, they realize you know your rights.',
-                    ),
+                    // Comment List
+                    ..._comments.map((c) => _CommentTile(
+                          author: c['author']!,
+                          time: c['time']!,
+                          text: c['text']!,
+                        )),
                   ],
                 ),
               ),
@@ -398,75 +351,6 @@ class PostDetailSheet extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  void _showGrievanceDialog(BuildContext context, String company) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Row(
-          children: const [
-            Icon(LucideIcons.shieldAlert, color: AppColors.redFlag, size: 20),
-            SizedBox(width: 8),
-            Text('Report to Grievance Officer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Under Rule 3(2) of the Information Technology (Intermediary Guidelines) Rules, 2021, verified representatives of $company or affected parties may file a formal grievance.',
-              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('• Acknowledged within: 24 Hours', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                  SizedBox(height: 3),
-                  Text('• Disposal/Resolution: 15 Days statutory', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                  SizedBox(height: 3),
-                  Text('• Email: grievance@noticeperiod.internal', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () {
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Grievance ticket registered. Assigned to Resident Grievance Officer under IT Rules 2021.'),
-                  backgroundColor: AppColors.emeraldVerified,
-                ),
-              );
-            },
-            child: const Text('File Formal Grievance'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -487,9 +371,9 @@ class _DetailStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -498,12 +382,12 @@ class _DetailStatCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: AppColors.textTertiary),
-              const SizedBox(width: 6),
+              Icon(icon, size: 12, color: AppColors.textTertiary),
+              const SizedBox(width: 5),
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
                 ),
@@ -514,7 +398,7 @@ class _DetailStatCard extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize: 17,
+              fontSize: 15,
               fontWeight: FontWeight.w800,
               color: valueColor ?? AppColors.textPrimary,
             ),
@@ -526,24 +410,24 @@ class _DetailStatCard extends StatelessWidget {
 }
 
 class _CommentTile extends StatelessWidget {
-  final String role;
+  final String author;
   final String time;
-  final String comment;
+  final String text;
 
   const _CommentTile({
-    required this.role,
+    required this.author,
     required this.time,
-    required this.comment,
+    required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
@@ -551,15 +435,15 @@ class _CommentTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 10,
-                backgroundColor: AppColors.primary,
-                child: Text('A', style: TextStyle(fontSize: 10, color: Colors.white)),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.25),
+                child: const Icon(LucideIcons.user, size: 10, color: AppColors.primary),
               ),
               const SizedBox(width: 8),
               Text(
-                role,
-                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                author,
+                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
               ),
               const Spacer(),
               Text(
@@ -570,7 +454,7 @@ class _CommentTile extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            comment,
+            text,
             style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.4),
           ),
         ],
@@ -578,4 +462,3 @@ class _CommentTile extends StatelessWidget {
     );
   }
 }
-

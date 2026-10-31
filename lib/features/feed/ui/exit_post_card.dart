@@ -18,11 +18,9 @@ class ExitPostCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final totalVotes =
-        post.validExitCount + post.dodgedBulletCount + post.toxicAlertCount;
-    final validPercent = totalVotes > 0
-        ? ((post.validExitCount + post.dodgedBulletCount) / totalVotes * 100)
-            .round()
+    final totalVotes = post.validExitCount + post.dodgedBulletCount + post.toxicAlertCount;
+    final helpfulPercent = totalVotes > 0
+        ? ((post.validExitCount + post.dodgedBulletCount) / totalVotes * 100).round()
         : 95;
 
     return Container(
@@ -31,15 +29,13 @@ class ExitPostCard extends ConsumerWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: post.isLayoff
-              ? AppColors.redFlag.withValues(alpha: 0.35)
-              : AppColors.border,
-          width: post.isLayoff ? 1.5 : 1,
+          color: post.isLayoff ? AppColors.redFlag.withValues(alpha: 0.45) : AppColors.border,
+          width: 1.3,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 12,
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -52,45 +48,31 @@ class ExitPostCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Top Row: Company Badge + Layoff Radar + Time
+              // 1. Top Row: Company Badge + Status Pill + Time
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4.5),
                     decoration: BoxDecoration(
-                      color: post.isVerifiedWorkEmail
-                          ? AppColors.emeraldBg
-                          : AppColors.borderLight,
+                      color: AppColors.surfaceElevated,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: post.isVerifiedWorkEmail
-                            ? AppColors.emeraldVerified.withValues(alpha: 0.3)
-                            : AppColors.border,
-                      ),
+                      border: Border.all(color: AppColors.borderBold),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          post.isVerifiedWorkEmail
-                              ? LucideIcons.shieldCheck
-                              : LucideIcons.user,
+                          post.isVerifiedWorkEmail ? LucideIcons.badgeCheck : LucideIcons.building2,
                           size: 13,
-                          color: post.isVerifiedWorkEmail
-                              ? AppColors.emeraldVerified
-                              : AppColors.textSecondary,
+                          color: post.isVerifiedWorkEmail ? AppColors.emeraldVerified : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          post.isVerifiedWorkEmail
-                              ? 'Verified @ ${post.companyName}'
-                              : post.companyName,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontSize: 11.5,
-                            color: post.isVerifiedWorkEmail
-                                ? AppColors.emeraldVerified
-                                : AppColors.textPrimary,
+                          post.companyName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ],
@@ -99,17 +81,37 @@ class ExitPostCard extends ConsumerWidget {
                   if (post.isLayoff) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.redFlagBg,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.3)),
                       ),
-                      child: Text(
-                        '⚡ Layoff Radar',
-                        style: theme.textTheme.labelLarge?.copyWith(
+                      child: const Text(
+                        '⚡ Layoff',
+                        style: TextStyle(
                           fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
                           color: AppColors.redFlag,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (post.openToRefer) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.emeraldBg,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.emeraldVerified.withValues(alpha: 0.3)),
+                      ),
+                      child: const Text(
+                        '🤝 Open to Refer',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.emeraldVerified,
                         ),
                       ),
                     ),
@@ -117,135 +119,101 @@ class ExitPostCard extends ConsumerWidget {
                   const Spacer(),
                   Text(
                     post.timeAgo,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: const TextStyle(
+                      fontSize: 11,
                       color: AppColors.textTertiary,
-                      fontSize: 11.5,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-              // 2. Role & Tenure
+              // 2. Role Title
               Text(
-                '${post.role} • ${post.tenureYears} yrs tenure',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
+                post.role,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.3,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
 
-              // 3. Metrics Chips Row
+              // 3. Primary Reason Pill + Metrics
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
                 children: [
                   _MetricPill(
-                    label: post.currentNoticeDay != null
-                        ? 'Notice: Day ${post.currentNoticeDay}/${post.noticeDays}'
-                        : 'Notice: ${post.noticeDays}d',
-                    bgColor: post.noticeDays >= 90
-                        ? AppColors.redFlagBg
-                        : AppColors.amberBg,
-                    textColor: post.noticeDays >= 90
-                        ? AppColors.redFlag
-                        : AppColors.amberNotice,
-                    icon: LucideIcons.clock,
+                    label: post.primaryReason,
+                    bgColor: AppColors.primary.withValues(alpha: 0.15),
+                    textColor: AppColors.primary,
+                    icon: LucideIcons.info,
                   ),
                   _MetricPill(
-                    label: 'Next Offer: +${post.hikePercent}% Hike',
-                    bgColor: AppColors.emeraldBg,
-                    textColor: AppColors.emeraldVerified,
-                    icon: LucideIcons.trendingUp,
+                    label: '${post.noticeDays}d Notice',
+                    bgColor: AppColors.amberNotice.withValues(alpha: 0.15),
+                    textColor: AppColors.amberNotice,
+                    icon: LucideIcons.clock,
                   ),
-                  if (post.openToRefer)
-                    const _MetricPill(
-                      label: '💼 Giving Referrals',
-                      bgColor: AppColors.blueBg,
-                      textColor: AppColors.blueSOS,
-                      icon: LucideIcons.users,
+                  if (post.hikePercent > 0)
+                    _MetricPill(
+                      label: '+${post.hikePercent}% Next Offer',
+                      bgColor: AppColors.emeraldVerified.withValues(alpha: 0.15),
+                      textColor: AppColors.emeraldVerified,
+                      icon: LucideIcons.trendingUp,
                     ),
                 ],
               ),
               const SizedBox(height: 12),
 
-              // 4. VIRAL FEATURE: "The Breaking Point" Slack/Teams Receipt Box
+              // 4. Turning Point Quote Bubble (if available)
               if (post.managerQuote != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: AppColors.surfaceElevated,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: AppColors.borderLight),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: [
-                          const Icon(LucideIcons.messageSquareWarning,
-                              size: 13, color: AppColors.redFlag),
-                          const SizedBox(width: 6),
+                        children: const [
+                          Icon(LucideIcons.quote, size: 12, color: AppColors.textTertiary),
+                          SizedBox(width: 5),
                           Text(
-                            'THE BREAKING POINT RECEIPT',
+                            'The Turning Point',
                             style: TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.8,
-                              color: AppColors.redFlag,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textTertiary,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      // Manager Chat Bubble
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7),
-                        decoration: BoxDecoration(
-                          color: AppColors.redFlagBg,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          '👔 ${post.managerQuote!}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                            height: 1.35,
-                          ),
+                      const SizedBox(height: 6),
+                      Text(
+                        post.managerQuote!,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: AppColors.textPrimary,
+                          fontStyle: FontStyle.italic,
+                          height: 1.4,
                         ),
                       ),
                       if (post.employeeReply != null) ...[
                         const SizedBox(height: 6),
-                        // Employee Reply Bubble
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 7),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                              ),
-                            ),
-                            child: Text(
-                              '⚡ ${post.employeeReply!}',
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                height: 1.35,
-                              ),
-                            ),
+                        Text(
+                          '↳ ${post.employeeReply!}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                            height: 1.35,
                           ),
                         ),
                       ],
@@ -260,97 +228,44 @@ class ExitPostCard extends ConsumerWidget {
                 post.storyBody,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13.5,
                   height: 1.45,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
 
-              // 6. VIRAL FEATURE: Community Verdict Meter (Blind/Reddit Jury)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '🔥 $validPercent% Community says Valid Exit',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.emeraldVerified,
-                          ),
-                        ),
-                        Text(
-                          '$totalVotes votes',
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: validPercent / 100.0,
-                        minHeight: 5,
-                        backgroundColor: AppColors.redFlag.withValues(alpha: 0.2),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.emeraldVerified),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 7. Interactive Reaction Bar
+              // 6. Social Reactions Bar
               Row(
                 children: [
                   _ReactionButton(
-                    icon: '🤝',
-                    label: 'Valid',
+                    icon: '👍',
+                    label: 'Helpful',
                     count: post.validExitCount,
-                    onTap: () => ref
-                        .read(exitPostsProvider.notifier)
-                        .react(post.id, 'valid'),
+                    onTap: () => ref.read(exitPostsProvider.notifier).react(post.id, 'valid'),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 8),
                   _ReactionButton(
                     icon: '🎯',
-                    label: 'Dodged',
+                    label: 'Relatable',
                     count: post.dodgedBulletCount,
-                    onTap: () => ref
-                        .read(exitPostsProvider.notifier)
-                        .react(post.id, 'dodged'),
-                  ),
-                  const SizedBox(width: 6),
-                  _ReactionButton(
-                    icon: '🍿',
-                    label: 'Overreacted',
-                    count: post.toxicAlertCount,
-                    onTap: () => ref
-                        .read(exitPostsProvider.notifier)
-                        .react(post.id, 'toxic'),
+                    onTap: () => ref.read(exitPostsProvider.notifier).react(post.id, 'dodged'),
                   ),
                   const Spacer(),
-                  Text(
-                    'Full Autopsy →',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 12,
-                    ),
+                  Row(
+                    children: const [
+                      Text(
+                        'Read Story',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(LucideIcons.arrowRight, size: 14, color: AppColors.primary),
+                    ],
                   ),
                 ],
               ),
@@ -378,7 +293,7 @@ class _MetricPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
@@ -421,20 +336,30 @@ class _ReactionButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: AppColors.borderLight,
+          color: AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 11.5)),
+            Text(icon, style: const TextStyle(fontSize: 12)),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
             const SizedBox(width: 4),
             Text(
               '$count',
               style: const TextStyle(
-                fontSize: 11.5,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),

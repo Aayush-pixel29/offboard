@@ -40,7 +40,9 @@ class NoticePeriodApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Offboard',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       home: session.isLoading
           ? const Scaffold(
               backgroundColor: AppColors.background,

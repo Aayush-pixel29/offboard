@@ -10,7 +10,6 @@ class CommunityHubScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final cohorts = ref.watch(cohortsProvider);
     final referrals = ref.watch(referralDropsProvider);
 
@@ -18,17 +17,23 @@ class CommunityHubScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         titleSpacing: 16,
+        backgroundColor: AppColors.background,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: const [
             Text(
-              'Exit Cohorts & Network',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const Text(
-              'ANONYMOUS COMMONS • ESCROW REFERRALS • ALUMNI ALLIANCES',
+              'Community Circles',
               style: TextStyle(
-                fontSize: 9,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              'PEER CIRCLES • ALUMNI NETWORKS • REFERRALS',
+              style: TextStyle(
+                fontSize: 8.5,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,
                 color: AppColors.textTertiary,
@@ -36,49 +41,48 @@ class CommunityHubScreen extends ConsumerWidget {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.userCheck, size: 20),
-            tooltip: 'My Zero-Knowledge Alias',
-            onPressed: () => _showAliasSheet(context),
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         children: [
-          // 1. Context Banner
+          // 1. Networking Intro Banner
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border, width: 1.2),
             ),
             child: Row(
               children: [
-                const Icon(LucideIcons.shieldCheck, color: AppColors.emeraldVerified, size: 20),
-                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(LucideIcons.users, color: AppColors.primary, size: 22),
+                ),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Zero-Knowledge Community',
+                    children: const [
+                      Text(
+                        'Alumni & Peer Circles',
                         style: TextStyle(
                           color: AppColors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 3),
                       Text(
-                        'Connect with peers in your company or alumni at new firms without revealing your email, phone, or name.',
+                        'Join private circles to chat with alumni from your past or target company, ask advice, and get direct job referrals.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 11.5,
-                          height: 1.35,
+                          fontSize: 12,
+                          height: 1.4,
                         ),
                       ),
                     ],
@@ -87,121 +91,65 @@ class CommunityHubScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
-          // 2. Active Cohorts Section
+          // 2. Active Cohorts Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Survival & Exit Cohorts',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              const Text(
+                'Active Peer Circles',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
               ),
-              Text(
-                '${cohorts.length} Active Hubs',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  '${cohorts.length} Groups',
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
           ...cohorts.map((c) => _CohortCard(cohort: c)),
 
           const SizedBox(height: 24),
 
-          // 3. Live Referral Drops Section (The Killer Feature)
+          // 3. Referral Drops Section
           Row(
-            children: [
-              const Icon(LucideIcons.sparkles, size: 18, color: AppColors.blueSOS),
-              const SizedBox(width: 6),
+            children: const [
+              Icon(LucideIcons.sparkles, size: 18, color: AppColors.emeraldVerified),
+              SizedBox(width: 8),
               Text(
-                'Verified Referral Drops (Ex-Alumni)',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                'Open Referral Drops',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
           const Text(
-            'Employees who recently completed their exit and are opening verified referral slots at their new companies.',
+            'Alumni who transitioned to new companies and are offering direct internal job referrals.',
             style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
 
           ...referrals.map((r) => _ReferralDropTile(referral: r)),
-          const SizedBox(height: 40),
+          const SizedBox(height: 30),
         ],
-      ),
-    );
-  }
-
-  void _showAliasSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: AppColors.borderLight,
-                  child: Text('🎭', style: TextStyle(fontSize: 20)),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Your Ephemeral Alias', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    Text('Regenerates every 30 days or on demand', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                children: const [
-                  Text('Active Alias: ', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                  Text(
-                    'Atlas-Voyager-8491 (Verified @ TCS)',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.primary),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No company IT admin, recruiter, or peer can reverse-engineer this to your real identity. Even when requesting a referral, your encrypted resume link is routed via zero-knowledge escrow.',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Got It', style: TextStyle(fontWeight: FontWeight.w700)),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -220,7 +168,14 @@ class _CohortCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,12 +183,13 @@ class _CohortCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 38,
+                height: 38,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: AppColors.borderLight,
+                  color: AppColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Text(cohort.icon, style: const TextStyle(fontSize: 18)),
               ),
@@ -244,13 +200,17 @@ class _CohortCard extends StatelessWidget {
                   children: [
                     Text(
                       cohort.title,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14.5,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     Text(
                       cohort.subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -258,17 +218,17 @@ class _CohortCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.blueBg,
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(LucideIcons.users, size: 11, color: AppColors.blueSOS),
+                    const Icon(LucideIcons.users, size: 11, color: AppColors.primary),
                     const SizedBox(width: 4),
                     Text(
                       '${cohort.activeMembers}',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.blueSOS),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
                     ),
                   ],
                 ),
@@ -281,43 +241,45 @@ class _CohortCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.borderLight),
             ),
             child: Row(
               children: [
-                const Icon(LucideIcons.flame, size: 14, color: AppColors.amberNotice),
+                const Icon(LucideIcons.messageSquare, size: 14, color: AppColors.amberNotice),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     cohort.topDiscussion,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                   ),
                 ),
                 const Icon(LucideIcons.chevronRight, size: 14, color: AppColors.textTertiary),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
             children: [
               Wrap(
                 spacing: 6,
                 children: cohort.tags.take(3).map((t) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                     decoration: BoxDecoration(
-                      color: AppColors.borderLight,
-                      borderRadius: BorderRadius.circular(4),
+                      color: AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: AppColors.border),
                     ),
-                    child: Text(t, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                    child: Text(t, style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary)),
                   );
                 }).toList(),
               ),
               const Spacer(),
               Text(
                 '💼 ${cohort.openReferrals} referrals open',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
+                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
               ),
             ],
           ),
@@ -340,7 +302,14 @@ class _ReferralDropTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.blueSOS.withValues(alpha: 0.25)),
+        border: Border.all(color: AppColors.border, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,10 +317,11 @@ class _ReferralDropTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.emeraldBg,
                   borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.emeraldVerified.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   referral.targetCompany,
@@ -368,14 +338,14 @@ class _ReferralDropTile extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
                 decoration: BoxDecoration(
-                  color: AppColors.redFlagBg,
+                  color: AppColors.amberNotice.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '${referral.referralSlotsLeft} Slots Left',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: AppColors.redFlag),
+                  '${referral.referralSlotsLeft} Slots Open',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: AppColors.amberNotice),
                 ),
               ),
             ],
@@ -383,46 +353,38 @@ class _ReferralDropTile extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Hiring: ${referral.hiringRoles}',
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary),
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 4),
           Text(
-            'Criteria: ${referral.criteria}',
-            style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+            'Requirements: ${referral.criteria}',
+            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Row(
             children: [
+              const Icon(LucideIcons.badgeCheck, size: 14, color: AppColors.emeraldVerified),
+              const SizedBox(width: 5),
               Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(LucideIcons.lock, size: 12, color: AppColors.emeraldVerified),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        referral.proofBadge,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.emeraldVerified),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  referral.proofBadge,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.emeraldVerified),
                 ),
               ),
-              const SizedBox(width: 8),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(LucideIcons.send, size: 13),
-                label: const Text('Request Referral', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+                label: const Text('Request Referral', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Referral packet sent anonymously to ${referral.targetCompany} alumnus!'),
+                      content: Text('Referral request sent to ${referral.targetCompany} alumnus!'),
                       backgroundColor: AppColors.emeraldVerified,
                     ),
                   );
@@ -435,4 +397,3 @@ class _ReferralDropTile extends StatelessWidget {
     );
   }
 }
-

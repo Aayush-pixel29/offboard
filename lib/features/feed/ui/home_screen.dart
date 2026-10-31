@@ -15,58 +15,69 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final posts = ref.watch(exitPostsProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
 
     final categories = [
-      'All',
-      '⚡ Layoff Radar',
-      '🏢 Toxic Culture',
-      '💸 Low Appraisal',
+      'All Stories',
+      '⚡ Layoff Support',
+      '🤝 Open to Refer',
       '⏳ 90-Day Notice',
-      '🏠 Forced RTO',
-      '💼 Open to Refer',
+      '💡 Career Moves',
+      '🏢 Culture',
     ];
 
     final filteredPosts = posts.where((p) {
-      if (selectedCategory == 'All') return true;
-      if (selectedCategory == '⚡ Layoff Radar') return p.isLayoff;
-      if (selectedCategory == '💼 Open to Refer') return p.openToRefer;
+      if (selectedCategory == 'All Stories' || selectedCategory == 'All') return true;
+      if (selectedCategory == '⚡ Layoff Support') return p.isLayoff;
+      if (selectedCategory == '🤝 Open to Refer') return p.openToRefer;
       if (selectedCategory == '⏳ 90-Day Notice') return p.noticeDays >= 90;
-      return p.primaryReason.toLowerCase().contains(selectedCategory.replaceAll(RegExp(r'[^\w\s]'), '').trim().toLowerCase());
+      return p.primaryReason.toLowerCase().contains(
+            selectedCategory.replaceAll(RegExp(r'[^\w\s]'), '').trim().toLowerCase(),
+          );
     }).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         titleSpacing: 16,
+        backgroundColor: AppColors.background,
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: const Icon(LucideIcons.logOut, size: 16, color: Colors.white),
+              child: const Icon(LucideIcons.sparkles, size: 16, color: Colors.white),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: const [
                 Text(
-                  'NoticePeriod',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
+                  'Offboard',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
-                  'REAL EXITS • ZERO FILTERS',
+                  'REAL STORIES • HONEST ADVICE • REFERRALS',
                   style: TextStyle(
-                    fontSize: 9,
+                    fontSize: 8.5,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+                    letterSpacing: 1.1,
                     color: AppColors.textTertiary,
                   ),
                 ),
@@ -76,12 +87,8 @@ class HomeScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.search, size: 20),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(LucideIcons.user, size: 20),
-            tooltip: 'Identity & Persona',
+            icon: const Icon(LucideIcons.user, size: 20, color: AppColors.textSecondary),
+            tooltip: 'My Account',
             onPressed: () => _showUserSessionSheet(context, ref),
           ),
           const SizedBox(width: 8),
@@ -91,35 +98,36 @@ class HomeScreen extends ConsumerWidget {
         children: [
           // Filter Chips Carousel
           Container(
-            height: 48,
+            height: 44,
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
               itemCount: categories.length,
               itemBuilder: (context, index) {
                 final cat = categories[index];
-                final isSelected = cat == selectedCategory;
+                final isSelected = selectedCategory == cat || (selectedCategory == 'All' && cat == 'All Stories');
 
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(cat),
                     selected: isSelected,
-                    showCheckmark: false,
+                    label: Text(cat),
                     labelStyle: TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? Colors.white : AppColors.textSecondary,
                     ),
                     backgroundColor: AppColors.surface,
                     selectedColor: AppColors.primary,
                     side: BorderSide(
                       color: isSelected ? AppColors.primary : AppColors.border,
+                      width: 1.2,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
+                    showCheckmark: false,
                     onSelected: (_) {
                       ref.read(selectedCategoryProvider.notifier).setCategory(cat);
                     },
@@ -129,63 +137,48 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Community Layoff Banner Alert
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.blueBg,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.blueSOS.withValues(alpha: 0.2)),
-            ),
-            child: Row(
-              children: [
-                const Icon(LucideIcons.heartHandshake, color: AppColors.blueSOS, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Affected by recent tech layoffs? Check verified community referrals or log silent restructuring.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.blueSOS,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Main Infinite Feed
+          // Feed List
           Expanded(
             child: filteredPosts.isEmpty
                 ? Center(
-                    child: Text(
-                      'No exit stories found for this tag.',
-                      style: theme.textTheme.bodyMedium,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(LucideIcons.messageSquare, size: 36, color: AppColors.textTertiary),
+                        SizedBox(height: 12),
+                        Text(
+                          'No stories in this topic yet.',
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Be the first to share an experience!',
+                          style: TextStyle(color: AppColors.textTertiary, fontSize: 12),
+                        ),
+                      ],
                     ),
                   )
                 : RefreshIndicator(
                     onRefresh: () => ref.read(exitPostsProvider.notifier).refresh(),
                     color: AppColors.primary,
                     child: ListView.builder(
-                        itemCount: filteredPosts.length,
-                        itemBuilder: (context, index) {
-                          final post = filteredPosts[index];
-                          return ExitPostCard(
-                            post: post,
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (_) => PostDetailSheet(post: post),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                      itemCount: filteredPosts.length,
+                      itemBuilder: (context, index) {
+                        final post = filteredPosts[index];
+                        return ExitPostCard(
+                          post: post,
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              useSafeArea: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => PostDetailSheet(post: post),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
           ),
         ],
@@ -193,10 +186,10 @@ class HomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        elevation: 4,
+        elevation: 6,
         icon: const Icon(LucideIcons.penTool, size: 16),
         label: const Text(
-          'Log Your Exit',
+          'Share Your Story',
           style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
         onPressed: () {
@@ -226,6 +219,7 @@ class HomeScreen extends ConsumerWidget {
         decoration: const BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border(top: BorderSide(color: AppColors.border, width: 1.4)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -234,37 +228,41 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 CircleAvatar(
-                  radius: 20,
-                  backgroundColor: session.isVerified ? AppColors.emeraldBg : AppColors.borderLight,
+                  radius: 22,
+                  backgroundColor: AppColors.surfaceElevated,
                   child: Icon(
-                    session.isVerified ? LucideIcons.shieldCheck : LucideIcons.user,
-                    color: session.isVerified ? AppColors.emeraldVerified : AppColors.textPrimary,
+                    session.isGoogleAuth
+                        ? LucideIcons.globe
+                        : session.isVerified
+                            ? LucideIcons.badgeCheck
+                            : LucideIcons.user,
+                    color: session.isVerified ? AppColors.emeraldVerified : AppColors.primary,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        session.name ?? (session.isVerified ? 'Verified Corporate Session' : 'Community Guest Session'),
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                        session.name ?? (session.isVerified ? 'Verified Member' : 'Community Guest'),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                       Text(
-                        session.isGoogleAuth
-                            ? (session.email ?? 'Google Account')
-                            : session.isVerified
-                                ? 'Domain: ${session.companyDomain}'
-                                : 'Unverified Visitor',
-                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        session.email ?? (session.isVerified ? 'Domain: ${session.companyDomain}' : 'Browsing Feed'),
+                        style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -274,7 +272,7 @@ class HomeScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Text('Active Alias: ', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  const Text('Posting Persona: ', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                   Expanded(
                     child: Text(
                       session.alias,
@@ -285,16 +283,16 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(46),
+                minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               icon: const Icon(LucideIcons.userCheck, size: 16),
-              label: const Text('Open Full Profile & Legal Protections', style: TextStyle(fontWeight: FontWeight.w700)),
+              label: const Text('View Profile & Activity', style: TextStyle(fontWeight: FontWeight.w700)),
               onPressed: () {
                 Navigator.of(ctx).pop();
                 Navigator.of(context).push(
@@ -307,11 +305,11 @@ class HomeScreen extends ConsumerWidget {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.redFlag,
                 side: BorderSide(color: AppColors.redFlag.withValues(alpha: 0.3)),
-                minimumSize: const Size.fromHeight(46),
+                minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               icon: const Icon(LucideIcons.logOut, size: 16),
-              label: const Text('Sign Out & Clear Device Session', style: TextStyle(fontWeight: FontWeight.w700)),
+              label: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w700)),
               onPressed: () async {
                 await ref.read(authProvider.notifier).logout();
                 if (ctx.mounted) {
@@ -323,11 +321,10 @@ class HomeScreen extends ConsumerWidget {
                 }
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
           ],
         ),
       ),
     );
   }
 }
-

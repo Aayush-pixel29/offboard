@@ -41,14 +41,13 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
     final rawText = _storyController.text.trim();
     if (rawText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please type your story first to sanitize it.')),
+        const SnackBar(content: Text('Please write your experience first.')),
       );
       return;
     }
 
     setState(() => _isSanitizing = true);
 
-    // Call live Gemini API to sanitize and strip PII
     final sanitized = await GeminiSanitizerService.sanitizeStory(rawText);
 
     setState(() {
@@ -59,7 +58,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Story sanitized via Gemini AI! Names and confidential markers stripped.'),
+          content: Text('AI Polish Complete: Private names and confidential markers cleaned!'),
           backgroundColor: AppColors.emeraldVerified,
         ),
       );
@@ -69,7 +68,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
   void _publish() {
     if (_companyController.text.trim().isEmpty || _storyController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in company name and your story.')),
+        const SnackBar(content: Text('Please enter your company and story.')),
       );
       return;
     }
@@ -83,7 +82,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
       primaryReason: _selectedReason,
       storyBody: _storyController.text.trim(),
       survivalTip: _survivalController.text.trim().isEmpty
-          ? 'Set boundaries from day one of your notice period and maintain clear handover logs.'
+          ? 'Maintain clear handover logs, complete your knowledge transfer, and prepare for interviews.'
           : _survivalController.text.trim(),
       hikePercent: _hikePercent,
       isVerifiedWorkEmail: _verifyWorkEmail,
@@ -100,7 +99,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Exit autopsy published anonymously!'),
+        content: Text('Story published successfully!'),
         backgroundColor: AppColors.primary,
       ),
     );
@@ -108,8 +107,6 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return DraggableScrollableSheet(
       initialChildSize: 0.92,
       minChildSize: 0.6,
@@ -119,16 +116,17 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
           decoration: const BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1.4)),
           ),
           child: Column(
             children: [
               const SizedBox(height: 12),
               Container(
-                width: 40,
-                height: 4,
+                width: 44,
+                height: 4.5,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.borderBold,
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 12),
@@ -140,26 +138,30 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: const [
                         Text(
-                          'Document Your Exit',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          'Share Your Experience',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                         Text(
-                          '100% Anonymous • Cryptographically un-linkable',
-                          style: TextStyle(fontSize: 11, color: AppColors.emeraldVerified, fontWeight: FontWeight.w600),
+                          'Help colleagues navigate career moves & notice periods',
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(LucideIcons.x, size: 20),
+                      icon: const Icon(LucideIcons.x, size: 20, color: AppColors.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
               ),
-              const Divider(),
+              const Divider(color: AppColors.borderLight),
 
               Expanded(
                 child: ListView(
@@ -167,15 +169,21 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                   padding: const EdgeInsets.all(20),
                   children: [
                     // Company Name
-                    Text('Company Name', style: theme.textTheme.labelLarge),
+                    const Text('Company Name', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _companyController,
+                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
                       decoration: InputDecoration(
-                        hintText: 'e.g. TCS, Infosys, Flipkart, Startup...',
+                        hintText: 'e.g. TCS, Infosys, Google, Startup...',
+                        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13),
                         filled: true,
                         fillColor: AppColors.background,
                         border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
                         ),
@@ -184,15 +192,21 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     const SizedBox(height: 16),
 
                     // Role
-                    Text('Your Role', style: theme.textTheme.labelLarge),
+                    const Text('Your Role', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _roleController,
+                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
                       decoration: InputDecoration(
-                        hintText: 'e.g. Senior Software Engineer / Product Manager',
+                        hintText: 'e.g. Senior Software Engineer / Product Designer',
+                        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13),
                         filled: true,
                         fillColor: AppColors.background,
                         border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
                         ),
@@ -204,10 +218,10 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Tenure Served', style: theme.textTheme.labelLarge),
+                        const Text('Tenure Served', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                         Text(
                           '${_tenure.toStringAsFixed(1)} Years',
-                          style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.primary),
+                          style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.primary),
                         ),
                       ],
                     ),
@@ -222,7 +236,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     const SizedBox(height: 16),
 
                     // Notice Period Selector
-                    Text('Notice Period', style: theme.textTheme.labelLarge),
+                    const Text('Notice Period', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                     const SizedBox(height: 8),
                     Row(
                       children: [15, 30, 60, 90].map((days) {
@@ -234,11 +248,13 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                               label: Text('$days Days'),
                               selected: isSel,
                               showCheckmark: false,
-                              selectedColor: days == 90 ? AppColors.redFlagBg : AppColors.primary,
+                              selectedColor: AppColors.primary,
+                              backgroundColor: AppColors.surfaceElevated,
+                              side: BorderSide(color: isSel ? AppColors.primary : AppColors.border),
                               labelStyle: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: isSel ? (days == 90 ? AppColors.redFlag : Colors.white) : AppColors.textPrimary,
+                                color: isSel ? Colors.white : AppColors.textSecondary,
                               ),
                               onSelected: (_) => setState(() => _noticePeriod = days),
                             ),
@@ -249,7 +265,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     const SizedBox(height: 20),
 
                     // Primary Reason
-                    Text('Primary Reason for Leaving', style: theme.textTheme.labelLarge),
+                    const Text('Primary Reason for Leaving', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -261,10 +277,12 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                           selected: isSel,
                           showCheckmark: false,
                           selectedColor: AppColors.primary,
+                          backgroundColor: AppColors.surfaceElevated,
+                          side: BorderSide(color: isSel ? AppColors.primary : AppColors.border),
                           labelStyle: TextStyle(
                             fontSize: 12,
                             fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
-                            color: isSel ? Colors.white : AppColors.textPrimary,
+                            color: isSel ? Colors.white : AppColors.textSecondary,
                           ),
                           onSelected: (_) => setState(() {
                             _selectedReason = r;
@@ -275,14 +293,14 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Next Job Hike
+                    // Salary Hike
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Salary Hike at Next Company', style: theme.textTheme.labelLarge),
+                        const Text('Next Job Hike', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                         Text(
                           '+$_hikePercent% Hike',
-                          style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
+                          style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.emeraldVerified),
                         ),
                       ],
                     ),
@@ -296,16 +314,15 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Exit Story Box
+                    // Story Box
                     Row(
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Text(
-                            'The Exit Story (What pushed you to leave?)',
-                            style: theme.textTheme.labelLarge,
+                            'Your Experience',
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary),
                           ),
                         ),
-                        const SizedBox(width: 8),
                         TextButton.icon(
                           onPressed: _isSanitizing ? null : _sanitizeStory,
                           icon: _isSanitizing
@@ -316,8 +333,8 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                                 )
                               : const Icon(LucideIcons.sparkles, size: 14, color: AppColors.emeraldVerified),
                           label: Text(
-                            _isSanitizing ? 'Sanitizing...' : 'Make Anonymous',
-                            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
+                            _isSanitizing ? 'Cleaning...' : 'Polish with AI',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
                           ),
                         ),
                       ],
@@ -326,11 +343,17 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     TextField(
                       controller: _storyController,
                       maxLines: 5,
+                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary),
                       decoration: InputDecoration(
-                        hintText: 'Share the turning point. Avoid manager names—our AI can strip them automatically...',
+                        hintText: 'Share what happened, the turning point, and what you learned. AI can help remove private names automatically...',
+                        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13),
                         filled: true,
                         fillColor: AppColors.background,
                         border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
                         ),
@@ -338,72 +361,43 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Survival Tip
-                    Text('Notice Period Survival Tip', style: theme.textTheme.labelLarge),
+                    // Survival / Career Tip
+                    const Text('Advice for Others in Similar Situations', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _survivalController,
                       maxLines: 2,
+                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary),
                       decoration: InputDecoration(
-                        hintText: 'How did you handle the handover, buyout, or manager behavior during your notice?',
+                        hintText: 'Any advice on managing notice period, negotiating offers, or handling transitions?',
+                        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13),
                         filled: true,
                         fillColor: AppColors.background,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 18),
 
-                    // Community Support & Referral Toggles
+                    // Referral Toggle
                     Material(
                       color: Colors.transparent,
                       child: SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Open to Refer Colleagues for New Job?', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                        subtitle: const Text('Helps employees affected by recent layoffs get verified internal referrals.', style: TextStyle(fontSize: 11.5)),
+                        title: const Text('Open to Refer Colleagues for New Job?', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary)),
+                        subtitle: const Text('Connect with peers affected by recent layoffs who are looking for roles.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                         value: _openToRefer,
-                        activeThumbColor: AppColors.blueSOS,
+                        activeThumbColor: AppColors.emeraldVerified,
                         onChanged: (val) => setState(() => _openToRefer = val),
                       ),
                     ),
-                    Material(
-                      color: Colors.transparent,
-                      child: SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Verify Company via Work Email (OTP)?', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                        subtitle: const Text('Earns Green Verified Badge. Email is discarded in RAM after hashing.', style: TextStyle(fontSize: 11.5)),
-                        value: _verifyWorkEmail,
-                        activeThumbColor: AppColors.emeraldVerified,
-                        onChanged: (val) => setState(() => _verifyWorkEmail = val),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Statutory & Fair-Comment Compliance Banner
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Icon(LucideIcons.scale, size: 15, color: AppColors.textSecondary),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Fair-Comment & Zero-Slander Policy: Individual manager names are strictly scrubbed via Gemini AI. Reviews focus strictly on systemic culture, notice terms, and policies.',
-                              style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.35),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 22),
 
                     // Submit Button
                     ElevatedButton(
@@ -416,11 +410,11 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
                       ),
                       onPressed: _publish,
                       child: const Text(
-                        'Publish Exit Autopsy Anonymously',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        'Share Story with Community',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 28),
                   ],
                 ),
               ),
@@ -431,4 +425,3 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
     );
   }
 }
-
