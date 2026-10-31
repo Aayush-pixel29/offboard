@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/bouncy_tap.dart';
+import '../../../core/widgets/mesh_scaffold.dart';
 
 class LeaderboardScreen extends StatelessWidget {
   const LeaderboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return MeshScaffold(
+      extendBody: true,
       appBar: AppBar(
         titleSpacing: 16,
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -25,7 +28,7 @@ class LeaderboardScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'LAYOFF RADAR • NOTICE PERIODS • CAREER MOVES',
+              'LAYOFF RADAR • NOTICE BENCHMARKS • CAREER MOVES',
               style: TextStyle(
                 fontSize: 8.5,
                 fontWeight: FontWeight.w800,
@@ -37,61 +40,74 @@ class LeaderboardScreen extends StatelessWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
         children: [
-          // 3 Big Summary Cards
+          // Bento Grid Top 3 Metric Highlights
           Row(
             children: [
               Expanded(
-                child: _MetricCard(
+                child: _BentoMetricCard(
                   title: 'Avg Notice',
                   value: '68 Days',
                   subtext: 'IT Benchmark: 90',
                   color: AppColors.amberNotice,
                   icon: LucideIcons.clock,
+                  gradient: const [Color(0x33451A03), Color(0x1A111623)],
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _MetricCard(
+                child: _BentoMetricCard(
                   title: 'Top Reason',
-                  value: 'Culture & Comp',
+                  value: 'Comp & Culture',
                   subtext: '42% of exits',
-                  color: AppColors.primary,
+                  color: AppColors.primaryLight,
                   icon: LucideIcons.pieChart,
+                  gradient: const [Color(0x331E1B4B), Color(0x1A111623)],
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _MetricCard(
+                child: _BentoMetricCard(
                   title: 'Avg Hike',
                   value: '+58%',
                   subtext: 'Post transition',
                   color: AppColors.emeraldVerified,
                   icon: LucideIcons.trendingUp,
+                  gradient: const [Color(0x33064E3B), Color(0x1A111623)],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
-          // Layoff Alert Bulletin
+          // Layoff Alert Bulletin (ThreeUI Glass Elevation)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.35), width: 1.2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.redFlag.withValues(alpha: 0.35),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.redFlagGlow.withValues(alpha: 0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.redFlag.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.redFlag.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(LucideIcons.radio, color: AppColors.redFlag, size: 20),
+                  child: const Icon(LucideIcons.radio, color: AppColors.redFlag, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -106,10 +122,14 @@ class LeaderboardScreen extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      SizedBox(height: 3),
+                      SizedBox(height: 4),
                       Text(
                         'Recent team restructurings reported across 4 tech firms. Over 180 alumni are offering referral slots to affected peers.',
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.35),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
                       ),
                     ],
                   ),
@@ -120,18 +140,28 @@ class LeaderboardScreen extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Section Title
-          const Text(
-            'Company Transition Trends',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Based on verified community exit stories and alumni reports.',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text(
+                'Company Transition Trends',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                'LIVE REPORTS',
+                style: TextStyle(
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                  color: AppColors.textTertiary,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
 
@@ -175,26 +205,27 @@ class LeaderboardScreen extends StatelessWidget {
             avgNotice: '90 Days',
             transitionRate: '81% into BigTech',
           ),
-          const SizedBox(height: 30),
         ],
       ),
     );
   }
 }
 
-class _MetricCard extends StatelessWidget {
+class _BentoMetricCard extends StatelessWidget {
   final String title;
   final String value;
   final String subtext;
   final Color color;
   final IconData icon;
+  final List<Color> gradient;
 
-  const _MetricCard({
+  const _BentoMetricCard({
     required this.title,
     required this.value,
     required this.subtext,
     required this.color,
     required this.icon,
+    required this.gradient,
   });
 
   @override
@@ -203,20 +234,39 @@ class _MetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border, width: 1.2),
+        gradient: LinearGradient(
+          colors: gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 13, color: AppColors.textTertiary),
+              Icon(icon, size: 13, color: color),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -225,7 +275,7 @@ class _MetricCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: color),
           ),
           const SizedBox(height: 2),
           Text(
@@ -261,109 +311,137 @@ class _CompanyRankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return BouncyTap(
+      onTap: () {},
+      scaleDown: 0.98,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.08),
+            width: 1.2,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Text(
-                  rank,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.textPrimary),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      companyName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14.5,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      totalReports,
-                      style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Text(
-                  shortTag,
-                  style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppColors.primary),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.borderLight),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
             ),
-            child: Row(
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                const Icon(LucideIcons.helpCircle, size: 14, color: AppColors.amberNotice),
-                const SizedBox(width: 8),
-                Expanded(
+                Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
                   child: Text(
-                    'Top Reason: $dominantReason',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                    rank,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12.5,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        companyName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14.5,
+                          letterSpacing: -0.2,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        totalReports,
+                        style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    shortTag,
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryLight,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _TagPill(label: avgNotice, icon: LucideIcons.clock),
-              const SizedBox(width: 6),
-              _TagPill(label: avgTenure, icon: LucideIcons.calendar),
-              const Spacer(),
-              Text(
-                transitionRate,
-                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceElevated,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
-            ],
-          ),
-        ],
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.helpCircle, size: 14, color: AppColors.amberNotice),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Primary Exit Factor: $dominantReason',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _TagPill(label: avgNotice, icon: LucideIcons.clock),
+                const SizedBox(width: 6),
+                _TagPill(label: avgTenure, icon: LucideIcons.calendar),
+                const Spacer(),
+                Text(
+                  transitionRate,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.emeraldVerified,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -378,11 +456,11 @@ class _TagPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -391,7 +469,11 @@ class _TagPill extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

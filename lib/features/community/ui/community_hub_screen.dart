@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/bouncy_tap.dart';
+import '../../../core/widgets/mesh_scaffold.dart';
 import '../models/community_models.dart';
 import '../providers/community_provider.dart';
 
@@ -13,11 +15,12 @@ class CommunityHubScreen extends ConsumerWidget {
     final cohorts = ref.watch(cohortsProvider);
     final referrals = ref.watch(referralDropsProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return MeshScaffold(
+      extendBody: true,
       appBar: AppBar(
         titleSpacing: 16,
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -43,25 +46,39 @@ class CommunityHubScreen extends ConsumerWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
         children: [
           // 1. Networking Intro Banner
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border, width: 1.2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.08),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryGlow.withValues(alpha: 0.1),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.18),
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.purpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(LucideIcons.users, color: AppColors.primary, size: 22),
+                  child: const Icon(LucideIcons.users, color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -102,19 +119,24 @@ class CommunityHubScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                   color: AppColors.textPrimary,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: Text(
                   '${cohorts.length} Groups',
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
@@ -135,6 +157,7 @@ class CommunityHubScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                   color: AppColors.textPrimary,
                 ),
               ),
@@ -148,7 +171,6 @@ class CommunityHubScreen extends ConsumerWidget {
           const SizedBox(height: 12),
 
           ...referrals.map((r) => _ReferralDropTile(referral: r)),
-          const SizedBox(height: 30),
         ],
       ),
     );
@@ -162,128 +184,151 @@ class _CohortCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return BouncyTap(
+      onTap: () {},
+      scaleDown: 0.98,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.08),
+            width: 1.2,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  ),
+                  child: Text(cohort.icon, style: const TextStyle(fontSize: 20)),
                 ),
-                child: Text(cohort.icon, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        cohort.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14.5,
+                          letterSpacing: -0.2,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        cohort.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(LucideIcons.users, size: 11, color: AppColors.primaryLight),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${cohort.activeMembers}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceElevated,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      cohort.title,
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.messageSquare, size: 14, color: AppColors.amberNotice),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      cohort.topDiscussion,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14.5,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    Text(
-                      cohort.subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Icon(LucideIcons.chevronRight, size: 14, color: AppColors.textTertiary),
+                ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(LucideIcons.users, size: 11, color: AppColors.primary),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${cohort.activeMembers}',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.borderLight),
             ),
-            child: Row(
+            const SizedBox(height: 12),
+            Row(
               children: [
-                const Icon(LucideIcons.messageSquare, size: 14, color: AppColors.amberNotice),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    cohort.topDiscussion,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                Wrap(
+                  spacing: 6,
+                  children: cohort.tags.take(3).map((t) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                      ),
+                      child: Text(
+                        t,
+                        style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const Spacer(),
+                Text(
+                  '💼 ${cohort.openReferrals} referrals open',
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.emeraldVerified,
                   ),
                 ),
-                const Icon(LucideIcons.chevronRight, size: 14, color: AppColors.textTertiary),
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Wrap(
-                spacing: 6,
-                children: cohort.tags.take(3).map((t) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Text(t, style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary)),
-                  );
-                }).toList(),
-              ),
-              const Spacer(),
-              Text(
-                '💼 ${cohort.openReferrals} referrals open',
-                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.emeraldVerified),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -301,12 +346,15 @@ class _ReferralDropTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 12,
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 14,
             offset: const Offset(0, 4),
           ),
         ],
@@ -317,15 +365,21 @@ class _ReferralDropTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
                 decoration: BoxDecoration(
                   color: AppColors.emeraldBg,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.emeraldVerified.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.emeraldVerified.withValues(alpha: 0.4),
+                  ),
                 ),
                 child: Text(
                   referral.targetCompany,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppColors.emeraldVerified),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                    color: AppColors.emeraldVerified,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -334,18 +388,27 @@ class _ReferralDropTile extends StatelessWidget {
                   referral.giverAlias,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.amberNotice.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
+                  color: AppColors.amberGlow.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.amberNotice.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   '${referral.referralSlotsLeft} Slots Open',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: AppColors.amberNotice),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 10.5,
+                    color: AppColors.amberNotice,
+                  ),
                 ),
               ),
             ],
@@ -353,7 +416,11 @@ class _ReferralDropTile extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Hiring: ${referral.hiringRoles}',
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary),
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 14.5,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -369,19 +436,15 @@ class _ReferralDropTile extends StatelessWidget {
                 child: Text(
                   referral.proofBadge,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.emeraldVerified),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.emeraldVerified,
+                  ),
                 ),
               ),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                icon: const Icon(LucideIcons.send, size: 13),
-                label: const Text('Request Referral', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                onPressed: () {
+              BouncyTap(
+                onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Referral request sent to ${referral.targetCompany} alumnus!'),
@@ -389,6 +452,39 @@ class _ReferralDropTile extends StatelessWidget {
                     ),
                   );
                 },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryHover],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(LucideIcons.send, size: 12, color: Colors.white),
+                      SizedBox(width: 6),
+                      Text(
+                        'Request Referral',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

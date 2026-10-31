@@ -5,6 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/resend_service.dart';
 import '../../../core/services/supabase_auth_service.dart';
+import '../../../core/widgets/bouncy_tap.dart';
+import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/mesh_scaffold.dart';
 import '../providers/auth_provider.dart';
 import '../../navigation/main_nav_wrapper.dart';
 
@@ -122,46 +125,70 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     setState(() => _isVerifyingOtp = true);
 
-    final isValid = await ResendService.verifyOtp(
-      email: _emailController.text.trim(),
-      enteredOtp: enteredOtp,
-      expectedHash: _expectedHash ?? '',
-    );
+    try {
+      final isValid = await ResendService.verifyOtp(
+        email: _emailController.text.trim(),
+        enteredOtp: enteredOtp,
+        expectedHash: _expectedHash ?? '',
+      );
 
-    setState(() => _isVerifyingOtp = false);
+      if (isValid) {
+        final domain = _detectedDomain ?? 'guest.com';
+        final alias = _generateFriendlyAlias(domain);
 
-    if (isValid) {
-      final domain = _detectedDomain ?? 'Community';
-      final alias = _generateFriendlyAlias(domain);
+        await ref.read(authProvider.notifier).setCorporateSession(
+              alias: alias,
+              companyDomain: domain,
+            );
 
-      await ref.read(authProvider.notifier).setCorporateSession(
-            alias: alias,
-            companyDomain: domain,
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
           );
-
-      _emailController.clear();
-      _otpController.clear();
-
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
-        );
+        }
+      } else {
+        setState(() => _isVerifyingOtp = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid or expired code. Please try again.'),
+              backgroundColor: AppColors.redFlag,
+            ),
+          );
+        }
       }
-    } else {
+    } catch (e) {
+      setState(() => _isVerifyingOtp = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Incorrect code. Please double-check and try again.'),
-            backgroundColor: AppColors.redFlag,
-          ),
+          SnackBar(content: Text('Verification error: $e')),
         );
       }
     }
   }
 
   Future<void> _handleGuestAccess() async {
-    final alias = 'Community-Member-${100 + Random().nextInt(900)}';
-    await ref.read(authProvider.notifier).setGuestSession(alias);
+    await ref.read(authProvider.notifier).setGuestSession('Curious Explorer #204');
+
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
+      );
+    }
+  }
+
+  Future<void> _loginWithQuickDemo({
+    required String name,
+    required String email,
+    required String company,
+    required String avatar,
+  }) async {
+    await ref.read(authProvider.notifier).setGoogleSession(
+          name: name,
+          email: email,
+          companyDomain: company,
+          avatarUrl: avatar,
+        );
 
     if (mounted) {
       Navigator.of(context).pushReplacement(
@@ -172,9 +199,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleSigningIn = true);
-
     try {
-      await SupabaseAuthService.signInWithGoogle();
+      final success = await SupabaseAuthService.signInWithGoogle();
+      if (!success && mounted) {
+        setState(() => _isGoogleSigningIn = false);
+        _showGoogleConfigNotice(context, 'Unable to launch Google Sign-In.');
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _isGoogleSigningIn = false);
@@ -189,7 +219,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
           side: const BorderSide(color: AppColors.border, width: 1.2),
         ),
         title: Row(
@@ -212,7 +242,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
               child: const Text(
@@ -220,10 +250,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.35),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             const Text(
-              'Or test with instant demo profile:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+              'Or test instantly with 1-tap demo:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primaryLight),
             ),
           ],
         ),
@@ -236,21 +266,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () async {
               Navigator.pop(ctx);
-              await ref.read(authProvider.notifier).setGoogleSession(
-                    name: 'Aayush Shelar',
-                    email: 'shelaraayush535@gmail.com',
-                    companyDomain: 'gmail.com',
-                    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-                  );
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
-                );
-              }
+              await _loginWithQuickDemo(
+                name: 'Aayush Shelar',
+                email: 'shelaraayush535@gmail.com',
+                company: 'techcorp.io',
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+              );
             },
             child: const Text('1-Tap Demo Mode', style: TextStyle(fontWeight: FontWeight.w700)),
           ),
@@ -261,99 +286,135 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 1. Pinterest-Inspired Visual Discovery Showcase
-                  _buildPinterestShowcase(),
-                  const SizedBox(height: 24),
-
-                  // 2. Main Brand Title & Human Tagline
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(9),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.35),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Offboard',
+    return MeshScaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Top Tagline Pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.35),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(LucideIcons.sparkles, size: 13, color: AppColors.primaryLight),
+                      SizedBox(width: 6),
+                      Text(
+                        'THE WORKPLACE TRUTH NETWORK',
                         style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.8,
-                          color: AppColors.textPrimary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                          color: AppColors.primaryLight,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Real workplace stories. Honest advice. Peer referrals.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
+                ),
+                const SizedBox(height: 16),
 
-                  // 3. Elevated Sign-In Card
-                  Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: AppColors.border, width: 1.4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.35),
-                          blurRadius: 24,
-                          offset: const Offset(0, 8),
+                // Brand Hero Title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.purpleAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Option A: Google Sign-In Button
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: AppColors.surfaceElevated,
-                            foregroundColor: AppColors.textPrimary,
-                            minimumSize: const Size.fromHeight(52),
-                            side: const BorderSide(color: AppColors.borderBold, width: 1.3),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.4),
+                            blurRadius: 18,
+                            offset: const Offset(0, 4),
                           ),
-                          onPressed: _isGoogleSigningIn ? null : _handleGoogleSignIn,
+                        ],
+                      ),
+                      child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Offboard',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -1.0,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Real layoff stories, notice buyout advice, and peer referrals.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Bento Grid Feature Showcase (ThreeUI & Let's Code Style)
+                _buildBentoShowcase(),
+                const SizedBox(height: 24),
+
+                // Glassmorphic Sign-In Card (Apple HIG)
+                GlassCard(
+                  padding: const EdgeInsets.all(22),
+                  borderRadius: 24,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Google Sign-In Button with Tactile Bounce
+                      BouncyTap(
+                        onTap: _isGoogleSigningIn ? null : _handleGoogleSignIn,
+                        child: Container(
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceElevated,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.12),
+                              width: 1.2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
                           child: _isGoogleSigningIn
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                              ? const Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
                                 )
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -362,162 +423,259 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                     SizedBox(width: 12),
                                     Text(
                                       'Continue with Google',
-                                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14.5,
+                                        color: AppColors.textPrimary,
+                                      ),
                                     ),
                                   ],
                                 ),
                         ),
-                        const SizedBox(height: 18),
+                      ),
+                      const SizedBox(height: 18),
 
-                        // OR Divider
-                        Row(
-                          children: const [
-                            Expanded(child: Divider(color: AppColors.borderLight)),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'or sign in with email',
-                                style: TextStyle(fontSize: 12, color: AppColors.textTertiary, fontWeight: FontWeight.w600),
+                      // Divider
+                      Row(
+                        children: const [
+                          Expanded(child: Divider(color: AppColors.borderLight)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'or continue with email',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: AppColors.textTertiary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            Expanded(child: Divider(color: AppColors.borderLight)),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
+                          ),
+                          Expanded(child: Divider(color: AppColors.borderLight)),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
 
-                        // Option B: Work / Personal Email Input
+                      // Email Field
+                      TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                        decoration: InputDecoration(
+                          hintText: 'Enter your work or personal email',
+                          hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13.5),
+                          prefixIcon: const Icon(LucideIcons.mail, size: 18, color: AppColors.textTertiary),
+                          filled: true,
+                          fillColor: AppColors.background,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: AppColors.border),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: AppColors.primaryLight, width: 1.5),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      if (!_otpSent)
+                        BouncyTap(
+                          onTap: _isSendingOtp ? null : _handleSendOtp,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [AppColors.primary, AppColors.primaryHover],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: _isSendingOtp
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Text(
+                                      'Send Sign-In Code',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        )
+                      else ...[
                         TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                          controller: _otpController,
+                          keyboardType: TextInputType.number,
+                          maxLength: 6,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 6,
+                            color: AppColors.textPrimary,
+                          ),
                           decoration: InputDecoration(
-                            hintText: 'Enter your work or personal email',
-                            hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13.5),
-                            prefixIcon: const Icon(LucideIcons.mail, size: 18, color: AppColors.textTertiary),
+                            counterText: '',
+                            hintText: '• • • • • •',
+                            hintStyle: const TextStyle(color: AppColors.textTertiary, letterSpacing: 6),
                             filled: true,
                             fillColor: AppColors.background,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.border),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: AppColors.emeraldVerified),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: AppColors.emeraldVerified, width: 1.8),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
+                        BouncyTap(
+                          onTap: _isVerifyingOtp ? null : _handleVerifyOtp,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: AppColors.emeraldVerified,
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.emeraldVerified.withValues(alpha: 0.3),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: _isVerifyingOtp
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Text(
+                                      'Confirm & Enter',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-                        if (!_otpSent)
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size.fromHeight(50),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 0,
-                            ),
-                            onPressed: _isSendingOtp ? null : _handleSendOtp,
-                            child: _isSendingOtp
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Text(
-                                    'Send Sign-In Code',
-                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                  ),
-                          )
-                        else ...[
-                          TextField(
-                            controller: _otpController,
-                            keyboardType: TextInputType.number,
-                            maxLength: 6,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 6,
-                              color: AppColors.textPrimary,
-                            ),
-                            decoration: InputDecoration(
-                              counterText: '',
-                              hintText: '• • • • • •',
-                              hintStyle: const TextStyle(color: AppColors.textTertiary, letterSpacing: 6),
-                              filled: true,
-                              fillColor: AppColors.background,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.emeraldVerified),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.emeraldVerified, width: 1.8),
-                              ),
-                            ),
+                // Quick Demo Profiles Bar
+                Column(
+                  children: [
+                    const Text(
+                      'OR TEST INSTANT DEMO PROFILES',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.1,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildDemoChip(
+                          label: '⚡ Ex-Google Lead',
+                          name: 'Priya Sharma',
+                          email: 'priya.sharma@google.com',
+                          company: 'google.com',
+                          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+                        ),
+                        _buildDemoChip(
+                          label: '💼 Ex-Amazon SDE',
+                          name: 'Rohan Verma',
+                          email: 'rohan.v@amazon.com',
+                          company: 'amazon.com',
+                          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+                        ),
+                        _buildDemoChip(
+                          label: '🚀 Ex-Fintech PM',
+                          name: 'Ananya Rao',
+                          email: 'ananya@fintechcorp.io',
+                          company: 'fintechcorp.io',
+                          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+
+                // Guest Access
+                BouncyTap(
+                  onTap: _handleGuestAccess,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.borderLight),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(LucideIcons.compass, size: 15, color: AppColors.textSecondary),
+                        SizedBox(width: 8),
+                        Text(
+                          'Explore feed as Guest (Read-Only)',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.emeraldVerified,
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size.fromHeight(50),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 0,
-                            ),
-                            onPressed: _isVerifyingOtp ? null : _handleVerifyOtp,
-                            child: _isVerifyingOtp
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Text(
-                                    'Confirm & Enter',
-                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                  ),
-                          ),
-                        ],
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 16),
 
-                  // 4. Quick Guest Explore
-                  TextButton.icon(
-                    onPressed: _handleGuestAccess,
-                    icon: const Icon(LucideIcons.compass, size: 16, color: AppColors.textSecondary),
-                    label: const Text(
-                      'Explore feed as Guest (Read-Only)',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
+                // Privacy Trust Assurance
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(LucideIcons.shieldCheck, size: 14, color: AppColors.emeraldVerified),
+                    SizedBox(width: 6),
+                    Text(
+                      'Zero identity leak. Post verified or completely anonymous.',
+                      style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
                     ),
-                  ),
-
-                  // 5. Simple Privacy Guarantee
-                  const SizedBox(height: 14),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(LucideIcons.shieldCheck, size: 14, color: AppColors.emeraldVerified),
-                      SizedBox(width: 6),
-                      Text(
-                        'Your privacy is protected. Post with your name or anonymously.',
-                        style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -525,31 +683,66 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  /// Pinterest-inspired card showcase showing trending stories and community moments
-  Widget _buildPinterestShowcase() {
+  Widget _buildDemoChip({
+    required String label,
+    required String name,
+    required String email,
+    required String company,
+    required String avatar,
+  }) {
+    return BouncyTap(
+      onTap: () => _loginWithQuickDemo(
+        name: name,
+        email: email,
+        company: company,
+        avatar: avatar,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.borderBold, width: 1.0),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Modern Bento-Grid Visual Feature Discovery
+  Widget _buildBentoShowcase() {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
-              child: _buildShowcaseCard(
-                icon: LucideIcons.building2,
-                tag: '90-Day Notice',
-                tagColor: AppColors.amberNotice,
-                title: 'Surviving 90-day notice at TCS to land 75% offer',
-                metric: '+75% Hike',
-                bgGradient: const [Color(0xFF1E1B4B), Color(0xFF111827)],
+              child: _buildBentoCard(
+                icon: LucideIcons.radio,
+                accentColor: AppColors.redFlag,
+                tag: 'RADAR',
+                title: 'Live Layoff Radar',
+                subtitle: '12 tech hubs monitored',
+                metric: 'Real-time alert',
+                gradient: const [Color(0x334C0519), Color(0x1A111623)],
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildShowcaseCard(
+              child: _buildBentoCard(
                 icon: LucideIcons.userPlus,
-                tag: 'Referral Open',
-                tagColor: AppColors.emeraldVerified,
-                title: 'Referred 4 designers after layoff shock at Fintech',
-                metric: '3 Hired',
-                bgGradient: const [Color(0xFF064E3B), Color(0xFF111827)],
+                accentColor: AppColors.emeraldVerified,
+                tag: 'REFERRALS',
+                title: 'Alumni Network',
+                subtitle: 'Direct peer fast-track',
+                metric: '840+ Active offers',
+                gradient: const [Color(0x33064E3B), Color(0x1A111623)],
               ),
             ),
           ],
@@ -558,24 +751,26 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         Row(
           children: [
             Expanded(
-              child: _buildShowcaseCard(
-                icon: LucideIcons.messageSquare,
-                tag: 'Career Advice',
-                tagColor: AppColors.blueSOS,
-                title: 'How I negotiated an early exit date with HR',
-                metric: '48 Replies',
-                bgGradient: const [Color(0xFF0C4A6E), Color(0xFF111827)],
+              child: _buildBentoCard(
+                icon: LucideIcons.clock,
+                accentColor: AppColors.amberNotice,
+                tag: 'TOOLKIT',
+                title: '90-Day Notice Survival',
+                subtitle: 'Buyout & legal templates',
+                metric: '+58% Avg hike',
+                gradient: const [Color(0x33451A03), Color(0x1A111623)],
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildShowcaseCard(
-                icon: LucideIcons.trendingUp,
-                tag: 'Transition',
-                tagColor: AppColors.purpleAccent,
-                title: 'From service company to remote Series-B unicorn',
-                metric: 'Top Story',
-                bgGradient: const [Color(0xFF3B0764), Color(0xFF111827)],
+              child: _buildBentoCard(
+                icon: LucideIcons.shieldCheck,
+                accentColor: AppColors.cyanAccent,
+                tag: 'PRIVACY',
+                title: 'Zero Identity Leaks',
+                subtitle: 'Verified without names',
+                metric: '100% Safe',
+                gradient: const [Color(0x33082F49), Color(0x1A111623)],
               ),
             ),
           ],
@@ -584,24 +779,36 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  Widget _buildShowcaseCard({
+  Widget _buildBentoCard({
     required IconData icon,
+    required Color accentColor,
     required String tag,
-    required Color tagColor,
     required String title,
+    required String subtitle,
     required String metric,
-    required List<Color> bgGradient,
+    required List<Color> gradient,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
+        color: AppColors.surface,
         gradient: LinearGradient(
-          colors: bgGradient,
+          colors: gradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.2),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,40 +819,57 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: tagColor.withValues(alpha: 0.18),
+                  color: accentColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   tag,
                   style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w700,
-                    color: tagColor,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                    color: accentColor,
                   ),
                 ),
               ),
-              Icon(icon, size: 14, color: AppColors.textTertiary),
+              Icon(icon, size: 15, color: accentColor),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             title,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w600,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
-              height: 1.3,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           Text(
-            metric,
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
+              fontSize: 11,
+              color: AppColors.textTertiary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Text(
+              metric,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: accentColor,
+              ),
             ),
           ),
         ],

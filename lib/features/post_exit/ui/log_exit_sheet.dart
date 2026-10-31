@@ -26,7 +26,7 @@ class _LogExitSheetState extends ConsumerState<LogExitSheet> {
   bool _isLayoff = false;
   bool _openToRefer = false;
   bool _isSanitizing = false;
-  bool _verifyWorkEmail = true;
+  final bool _verifyWorkEmail = true;
 
   final List<String> _reasons = [
     'Toxic Culture',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/bouncy_tap.dart';
 import '../models/exit_post.dart';
 import '../providers/feed_provider.dart';
 
@@ -17,34 +18,36 @@ class ExitPostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final totalVotes = post.validExitCount + post.dodgedBulletCount + post.toxicAlertCount;
-    final helpfulPercent = totalVotes > 0
-        ? ((post.validExitCount + post.dodgedBulletCount) / totalVotes * 100).round()
-        : 95;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: post.isLayoff ? AppColors.redFlag.withValues(alpha: 0.45) : AppColors.border,
-          width: 1.3,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+    return BouncyTap(
+      onTap: onTap,
+      scaleDown: 0.98,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: post.isLayoff
+                ? AppColors.redFlag.withValues(alpha: 0.45)
+                : Colors.white.withValues(alpha: 0.08),
+            width: 1.2,
           ),
-        ],
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+            if (post.isLayoff)
+              BoxShadow(
+                color: AppColors.redFlagGlow.withValues(alpha: 0.1),
+                blurRadius: 16,
+                offset: const Offset(0, 0),
+              ),
+          ],
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,11 +55,14 @@ class ExitPostCard extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.borderBold),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        width: 1.0,
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -64,14 +70,17 @@ class ExitPostCard extends ConsumerWidget {
                         Icon(
                           post.isVerifiedWorkEmail ? LucideIcons.badgeCheck : LucideIcons.building2,
                           size: 13,
-                          color: post.isVerifiedWorkEmail ? AppColors.emeraldVerified : AppColors.textSecondary,
+                          color: post.isVerifiedWorkEmail
+                              ? AppColors.emeraldVerified
+                              : AppColors.textSecondary,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         Text(
                           post.companyName,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
                             color: AppColors.textPrimary,
                           ),
                         ),
@@ -79,40 +88,56 @@ class ExitPostCard extends ConsumerWidget {
                     ),
                   ),
                   if (post.isLayoff) ...[
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4.5),
                       decoration: BoxDecoration(
                         color: AppColors.redFlagBg,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.3)),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.4)),
                       ),
-                      child: const Text(
-                        '⚡ Layoff',
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.redFlag,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(LucideIcons.radio, size: 10, color: AppColors.redFlag),
+                          SizedBox(width: 4),
+                          Text(
+                            'Layoff Radar',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.redFlag,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                   if (post.openToRefer) ...[
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4.5),
                       decoration: BoxDecoration(
                         color: AppColors.emeraldBg,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.emeraldVerified.withValues(alpha: 0.3)),
-                      ),
-                      child: const Text(
-                        '🤝 Open to Refer',
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.emeraldVerified,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColors.emeraldVerified.withValues(alpha: 0.4),
                         ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(LucideIcons.userPlus, size: 10, color: AppColors.emeraldVerified),
+                          SizedBox(width: 4),
+                          Text(
+                            'Open to Refer',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.emeraldVerified,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -121,6 +146,7 @@ class ExitPostCard extends ConsumerWidget {
                     post.timeAgo,
                     style: const TextStyle(
                       fontSize: 11,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.textTertiary,
                     ),
                   ),
@@ -135,32 +161,32 @@ class ExitPostCard extends ConsumerWidget {
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
 
-              // 3. Primary Reason Pill + Metrics
+              // 3. Highlight Metrics Bento Pills
               Wrap(
-                spacing: 6,
+                spacing: 8,
                 runSpacing: 6,
                 children: [
                   _MetricPill(
                     label: post.primaryReason,
-                    bgColor: AppColors.primary.withValues(alpha: 0.15),
-                    textColor: AppColors.primary,
-                    icon: LucideIcons.info,
+                    bgColor: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    textColor: AppColors.primaryLight,
+                    icon: LucideIcons.sparkles,
                   ),
                   _MetricPill(
                     label: '${post.noticeDays}d Notice',
-                    bgColor: AppColors.amberNotice.withValues(alpha: 0.15),
+                    bgColor: AppColors.amberGlow.withValues(alpha: 0.15),
                     textColor: AppColors.amberNotice,
                     icon: LucideIcons.clock,
                   ),
                   if (post.hikePercent > 0)
                     _MetricPill(
                       label: '+${post.hikePercent}% Next Offer',
-                      bgColor: AppColors.emeraldVerified.withValues(alpha: 0.15),
+                      bgColor: AppColors.emeraldGlow.withValues(alpha: 0.15),
                       textColor: AppColors.emeraldVerified,
                       icon: LucideIcons.trendingUp,
                     ),
@@ -174,8 +200,16 @@ class ExitPostCard extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceElevated,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderLight),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border(
+                      left: BorderSide(
+                        color: post.isLayoff ? AppColors.redFlag : AppColors.primary,
+                        width: 3.0,
+                      ),
+                      top: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+                      right: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,12 +219,12 @@ class ExitPostCard extends ConsumerWidget {
                           Icon(LucideIcons.quote, size: 12, color: AppColors.textTertiary),
                           SizedBox(width: 5),
                           Text(
-                            'The Turning Point',
+                            'THE TURNING POINT',
                             style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
                               color: AppColors.textTertiary,
-                              letterSpacing: 0.5,
+                              letterSpacing: 0.8,
                             ),
                           ),
                         ],
@@ -212,7 +246,7 @@ class ExitPostCard extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
+                            color: AppColors.primaryLight,
                             height: 1.35,
                           ),
                         ),
@@ -231,12 +265,12 @@ class ExitPostCard extends ConsumerWidget {
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13.5,
-                  height: 1.45,
+                  height: 1.5,
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
-              // 6. Social Reactions Bar
+              // 6. Tactile Reactions Bar with anime.js-style bouncing
               Row(
                 children: [
                   _ReactionButton(
@@ -256,15 +290,15 @@ class ExitPostCard extends ConsumerWidget {
                   Row(
                     children: const [
                       Text(
-                        'Read Story',
+                        'Read full story',
                         style: TextStyle(
-                          color: AppColors.primary,
+                          color: AppColors.primaryLight,
                           fontWeight: FontWeight.w700,
-                          fontSize: 12.5,
+                          fontSize: 12,
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(LucideIcons.arrowRight, size: 14, color: AppColors.primary),
+                      Icon(LucideIcons.arrowRight, size: 13, color: AppColors.primaryLight),
                     ],
                   ),
                 ],
@@ -293,16 +327,20 @@ class _MetricPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: textColor.withValues(alpha: 0.25),
+          width: 0.8,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 11, color: textColor),
-          const SizedBox(width: 4),
+          const SizedBox(width: 5),
           Text(
             label,
             style: TextStyle(
@@ -332,21 +370,24 @@ class _ReactionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return BouncyTap(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      scaleDown: 0.92,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5.5),
         decoration: BoxDecoration(
           color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.08),
+            width: 1.0,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(icon, style: const TextStyle(fontSize: 12)),
-            const SizedBox(width: 4),
+            const SizedBox(width: 5),
             Text(
               label,
               style: const TextStyle(
@@ -355,12 +396,12 @@ class _ReactionButton extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 5),
             Text(
               '$count',
               style: const TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
               ),
             ),
