@@ -12,11 +12,24 @@ class SupabaseAuthService {
     }
 
     try {
+      String? redirectUrl;
+      if (kIsWeb) {
+        // Dynamically compute current app origin and path (e.g. https://aayush-pixel29.github.io/offboard/)
+        final uri = Uri.base;
+        var path = uri.path;
+        if (!path.endsWith('/')) {
+          path = '$path/';
+        }
+        redirectUrl = '${uri.origin}$path';
+      } else {
+        redirectUrl = 'io.supabase.offboard://login-callback';
+      }
+
+      debugPrint('Initiating Supabase Google OAuth with redirectTo: $redirectUrl');
+
       final success = await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb
-            ? null // Web handles redirect automatically to current origin
-            : 'io.supabase.offboard://login-callback',
+        redirectTo: redirectUrl,
         authScreenLaunchMode: LaunchMode.platformDefault,
       );
       return success;
