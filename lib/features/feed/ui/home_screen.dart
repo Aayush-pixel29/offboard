@@ -50,15 +50,11 @@ class HomeScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.purpleAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.35),
+                    color: AppColors.primaryGlow,
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -85,7 +81,7 @@ class HomeScreen extends ConsumerWidget {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.1,
-                    color: AppColors.textTertiary,
+                    color: AppColors.primaryDark,
                   ),
                 ),
               ],
@@ -94,7 +90,7 @@ class HomeScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.user, size: 20, color: AppColors.textSecondary),
+            icon: const Icon(LucideIcons.user, size: 20, color: AppColors.textPrimary),
             tooltip: 'My Account',
             onPressed: () => _showUserSessionSheet(context, ref),
           ),
@@ -128,21 +124,21 @@ class HomeScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primary
-                            : AppColors.surface.withValues(alpha: 0.8),
+                            ? AppColors.goldChampagne
+                            : AppColors.surface,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.primaryLight
-                              : Colors.white.withValues(alpha: 0.08),
-                          width: 1.0,
+                              ? AppColors.goldBorder
+                              : AppColors.border,
+                          width: 1.2,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.35),
+                                  color: AppColors.primaryGlow.withValues(alpha: 0.15),
                                   blurRadius: 10,
-                                  offset: const Offset(0, 3),
+                                  offset: const Offset(0, 2),
                                 ),
                               ]
                             : null,
@@ -152,9 +148,9 @@ class HomeScreen extends ConsumerWidget {
                           cat,
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                             letterSpacing: -0.2,
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -194,7 +190,7 @@ class HomeScreen extends ConsumerWidget {
                     onRefresh: () => ref.read(exitPostsProvider.notifier).refresh(),
                     color: AppColors.primary,
                     child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 96),
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 100),
                       itemCount: filteredPosts.length,
                       itemBuilder: (context, index) {
                         final post = filteredPosts[index];
@@ -217,12 +213,16 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70), // Keep above floating nav dock
+        padding: const EdgeInsets.only(bottom: 74), // Clear floating nav dock
         child: FloatingActionButton.extended(
-          backgroundColor: AppColors.primary,
+          backgroundColor: AppColors.textPrimary, // Jet Black Luxury Core
           foregroundColor: Colors.white,
-          elevation: 8,
-          icon: const Icon(LucideIcons.penTool, size: 16),
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: AppColors.goldBorder, width: 1.2),
+          ),
+          icon: const Icon(LucideIcons.penTool, size: 16, color: AppColors.primaryLight),
           label: const Text(
             'Share Your Story',
             style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.2),
@@ -265,14 +265,14 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: AppColors.surfaceElevated,
+                  backgroundColor: AppColors.goldChampagne,
                   child: Icon(
                     session.isGoogleAuth
                         ? LucideIcons.globe
                         : session.isVerified
                             ? LucideIcons.badgeCheck
                             : LucideIcons.user,
-                    color: session.isVerified ? AppColors.emeraldVerified : AppColors.primary,
+                    color: session.isVerified ? AppColors.emeraldVerified : AppColors.primaryDark,
                     size: 20,
                   ),
                 ),
@@ -320,9 +320,9 @@ class HomeScreen extends ConsumerWidget {
                       session.alias,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         fontSize: 12.5,
-                        color: AppColors.primaryLight,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),
@@ -332,12 +332,12 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 18),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.textPrimary,
                 foregroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
-              icon: const Icon(LucideIcons.userCheck, size: 16),
+              icon: const Icon(LucideIcons.userCheck, size: 16, color: AppColors.primaryLight),
               label: const Text('View Profile & Activity', style: TextStyle(fontWeight: FontWeight.w700)),
               onPressed: () {
                 Navigator.of(ctx).pop();

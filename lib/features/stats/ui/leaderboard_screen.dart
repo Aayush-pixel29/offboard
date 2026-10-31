@@ -33,18 +33,18 @@ class LeaderboardScreen extends StatelessWidget {
                 fontSize: 8.5,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,
-                color: AppColors.textTertiary,
+                color: AppColors.primaryDark,
               ),
             ),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
         children: [
           // Bento Grid Top 3 Metric Highlights
           Row(
-            children: [
+            children: const [
               Expanded(
                 child: _BentoMetricCard(
                   title: 'Avg Notice',
@@ -52,21 +52,23 @@ class LeaderboardScreen extends StatelessWidget {
                   subtext: 'IT Benchmark: 90',
                   color: AppColors.amberNotice,
                   icon: LucideIcons.clock,
-                  gradient: const [Color(0x33451A03), Color(0x1A111623)],
+                  bgColor: AppColors.amberBg,
+                  borderColor: AppColors.amberBorder,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: _BentoMetricCard(
                   title: 'Top Reason',
                   value: 'Comp & Culture',
                   subtext: '42% of exits',
-                  color: AppColors.primaryLight,
+                  color: AppColors.primaryDark,
                   icon: LucideIcons.pieChart,
-                  gradient: const [Color(0x331E1B4B), Color(0x1A111623)],
+                  bgColor: AppColors.goldChampagne,
+                  borderColor: AppColors.goldBorder,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: _BentoMetricCard(
                   title: 'Avg Hike',
@@ -74,27 +76,28 @@ class LeaderboardScreen extends StatelessWidget {
                   subtext: 'Post transition',
                   color: AppColors.emeraldVerified,
                   icon: LucideIcons.trendingUp,
-                  gradient: const [Color(0x33064E3B), Color(0x1A111623)],
+                  bgColor: AppColors.emeraldBg,
+                  borderColor: AppColors.emeraldBorder,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
 
-          // Layoff Alert Bulletin (ThreeUI Glass Elevation)
+          // Layoff Alert Bulletin
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.redFlag.withValues(alpha: 0.35),
+                color: AppColors.redFlagBorder,
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.redFlagGlow.withValues(alpha: 0.12),
-                  blurRadius: 16,
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 14,
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -104,7 +107,7 @@ class LeaderboardScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.redFlag.withValues(alpha: 0.18),
+                    color: AppColors.redFlagBg,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(LucideIcons.radio, color: AppColors.redFlag, size: 22),
@@ -147,7 +150,7 @@ class LeaderboardScreen extends StatelessWidget {
                 'Company Transition Trends',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.3,
                   color: AppColors.textPrimary,
                 ),
@@ -158,7 +161,7 @@ class LeaderboardScreen extends StatelessWidget {
                   fontSize: 9.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.0,
-                  color: AppColors.textTertiary,
+                  color: AppColors.primaryDark,
                 ),
               ),
             ],
@@ -217,7 +220,8 @@ class _BentoMetricCard extends StatelessWidget {
   final String subtext;
   final Color color;
   final IconData icon;
-  final List<Color> gradient;
+  final Color bgColor;
+  final Color borderColor;
 
   const _BentoMetricCard({
     required this.title,
@@ -225,7 +229,8 @@ class _BentoMetricCard extends StatelessWidget {
     required this.subtext,
     required this.color,
     required this.icon,
-    required this.gradient,
+    required this.bgColor,
+    required this.borderColor,
   });
 
   @override
@@ -234,21 +239,16 @@ class _BentoMetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        gradient: LinearGradient(
-          colors: gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: borderColor.withValues(alpha: 0.6),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -264,7 +264,7 @@ class _BentoMetricCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.textSecondary,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -275,12 +275,12 @@ class _BentoMetricCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: color),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: color),
           ),
           const SizedBox(height: 2),
           Text(
             subtext,
-            style: const TextStyle(fontSize: 9.5, color: AppColors.textTertiary),
+            style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w500, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -321,12 +321,12 @@ class _CompanyRankCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.border,
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 14,
               offset: const Offset(0, 4),
             ),
@@ -342,16 +342,16 @@ class _CompanyRankCard extends StatelessWidget {
                   height: 32,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: AppColors.goldBorder,
                     ),
                   ),
                   child: Text(
                     rank,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
                       fontSize: 12.5,
                       color: AppColors.textPrimary,
                     ),
@@ -365,7 +365,7 @@ class _CompanyRankCard extends StatelessWidget {
                       Text(
                         companyName,
                         style: const TextStyle(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                           fontSize: 14.5,
                           letterSpacing: -0.2,
                           color: AppColors.textPrimary,
@@ -381,10 +381,10 @@ class _CompanyRankCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: AppColors.goldBorder,
                     ),
                   ),
                   child: Text(
@@ -392,7 +392,7 @@ class _CompanyRankCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primaryLight,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ),
@@ -402,9 +402,9 @@ class _CompanyRankCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: AppColors.backgroundSecondary,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: AppColors.borderLight),
               ),
               child: Row(
                 children: [
@@ -458,14 +458,14 @@ class _TagPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: AppColors.surfaceHighlight,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 11, color: AppColors.textTertiary),
+          Icon(icon, size: 11, color: AppColors.textSecondary),
           const SizedBox(width: 4),
           Text(
             label,

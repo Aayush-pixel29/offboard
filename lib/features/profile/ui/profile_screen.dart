@@ -38,14 +38,14 @@ class ProfileScreen extends ConsumerWidget {
                 fontSize: 8.5,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,
-                color: AppColors.textTertiary,
+                color: AppColors.primaryDark,
               ),
             ),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
         children: [
           // 1. Account Profile Bento Card
           Container(
@@ -54,12 +54,12 @@ class ProfileScreen extends ConsumerWidget {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.border,
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -74,20 +74,16 @@ class ProfileScreen extends ConsumerWidget {
                       width: 58,
                       height: 58,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
+                        color: AppColors.goldChampagne,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
-                          color: session.isVerified
-                              ? AppColors.emeraldVerified.withValues(alpha: 0.5)
-                              : AppColors.primary.withValues(alpha: 0.5),
+                          color: AppColors.goldBorder,
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: session.isVerified
-                                ? AppColors.emeraldGlow
-                                : AppColors.primaryGlow,
-                            blurRadius: 14,
+                            color: AppColors.primaryGlow.withValues(alpha: 0.2),
+                            blurRadius: 12,
                             offset: const Offset(0, 3),
                           ),
                         ],
@@ -98,10 +94,10 @@ class ProfileScreen extends ConsumerWidget {
                               child: Image.network(
                                 session.avatarUrl!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(
+                                errorBuilder: (_, _, _) => const Icon(
                                   LucideIcons.user,
                                   size: 26,
-                                  color: AppColors.primaryLight,
+                                  color: AppColors.primaryDark,
                                 ),
                               ),
                             )
@@ -113,7 +109,7 @@ class ProfileScreen extends ConsumerWidget {
                                       : LucideIcons.user,
                               color: session.isVerified
                                   ? AppColors.emeraldVerified
-                                  : AppColors.primaryLight,
+                                  : AppColors.primaryDark,
                               size: 26,
                             ),
                     ),
@@ -129,7 +125,7 @@ class ProfileScreen extends ConsumerWidget {
                                   session.name ?? session.alias,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
+                                    fontWeight: FontWeight.w900,
                                     fontSize: 16.5,
                                     letterSpacing: -0.3,
                                     color: AppColors.textPrimary,
@@ -154,6 +150,7 @@ class ProfileScreen extends ConsumerWidget {
                             style: const TextStyle(
                               fontSize: 12.5,
                               color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -167,9 +164,9 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                    border: Border.all(color: AppColors.goldBorder.withValues(alpha: 0.6)),
                   ),
                   child: Row(
                     children: [
@@ -177,7 +174,7 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       const Text(
                         'Posting Persona: ',
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
                       ),
                       Expanded(
                         child: Text(
@@ -185,8 +182,8 @@ class ProfileScreen extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primaryLight,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -196,7 +193,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 10),
                 const Text(
                   'Your real identity is never exposed on the feed unless you choose to share it.',
-                  style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
+                  style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -226,7 +223,7 @@ class ProfileScreen extends ConsumerWidget {
             'Community Guidelines',
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
               letterSpacing: -0.3,
               color: AppColors.textPrimary,
             ),
@@ -234,7 +231,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           const Text(
             'Offboard is built on mutual support, respectful discourse, and constructive feedback.',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
 
@@ -244,7 +241,7 @@ class ProfileScreen extends ConsumerWidget {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.border,
                 width: 1.2,
               ),
             ),
@@ -289,10 +286,10 @@ class ProfileScreen extends ConsumerWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: AppColors.redFlagBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.redFlag.withValues(alpha: 0.35),
+                  color: AppColors.redFlagBorder,
                   width: 1.2,
                 ),
               ),
@@ -304,7 +301,7 @@ class ProfileScreen extends ConsumerWidget {
                   Text(
                     'Sign Out',
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       fontSize: 14,
                       color: AppColors.redFlag,
                     ),
@@ -333,7 +330,7 @@ class _StatMetricBox extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.border,
           width: 1.2,
         ),
       ),
@@ -344,7 +341,7 @@ class _StatMetricBox extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: AppColors.primaryLight,
+              color: AppColors.primaryDark,
             ),
           ),
           const SizedBox(height: 3),
@@ -382,10 +379,11 @@ class _GuidelineItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primaryGlow.withValues(alpha: 0.15),
+            color: AppColors.goldChampagne,
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.goldBorder),
           ),
-          child: Icon(icon, size: 14, color: AppColors.primaryLight),
+          child: Icon(icon, size: 14, color: AppColors.primaryDark),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -395,7 +393,7 @@ class _GuidelineItem extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   fontSize: 13,
                   color: AppColors.textPrimary,
                 ),
@@ -407,6 +405,7 @@ class _GuidelineItem extends StatelessWidget {
                   fontSize: 11.5,
                   color: AppColors.textSecondary,
                   height: 1.4,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

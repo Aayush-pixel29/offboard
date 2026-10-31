@@ -109,7 +109,7 @@ Sincerely,
                 fontSize: 8.5,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,
-                color: AppColors.textTertiary,
+                color: AppColors.primaryDark,
               ),
             ),
           ],
@@ -122,24 +122,18 @@ Sincerely,
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(color: AppColors.border),
             ),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: AppColors.primary,
+                color: AppColors.goldChampagne,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                border: Border.all(color: AppColors.goldBorder),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
-              labelColor: Colors.white,
+              labelColor: AppColors.textPrimary,
               unselectedLabelColor: AppColors.textSecondary,
               labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5),
               tabs: const [
@@ -155,7 +149,7 @@ Sincerely,
         children: [
           // Tab 1: Resignation Letter Builder
           ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
             children: [
               Container(
                 padding: const EdgeInsets.all(18),
@@ -163,12 +157,12 @@ Sincerely,
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.border,
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -180,7 +174,7 @@ Sincerely,
                     const Text(
                       'Customize Letter Details',
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w900,
                         fontSize: 15,
                         color: AppColors.textPrimary,
                       ),
@@ -188,7 +182,7 @@ Sincerely,
                     const SizedBox(height: 14),
                     TextField(
                       controller: _roleController,
-                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary),
+                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                       decoration: InputDecoration(
                         labelText: 'Your Job Role',
                         labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
@@ -208,7 +202,7 @@ Sincerely,
                     const SizedBox(height: 10),
                     TextField(
                       controller: _companyController,
-                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary),
+                      style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                       decoration: InputDecoration(
                         labelText: 'Company Name',
                         labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
@@ -241,7 +235,7 @@ Sincerely,
                         ),
                         DropdownButton<int>(
                           value: _noticeDays,
-                          dropdownColor: AppColors.surfaceElevated,
+                          dropdownColor: AppColors.surface,
                           underline: const SizedBox(),
                           items: [15, 30, 60, 90].map((d) {
                             return DropdownMenuItem(
@@ -250,7 +244,7 @@ Sincerely,
                                 '$d Days',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.primaryLight,
+                                  color: AppColors.primaryDark,
                                 ),
                               ),
                             );
@@ -291,7 +285,7 @@ Sincerely,
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.border,
                     width: 1.2,
                   ),
                 ),
@@ -305,7 +299,7 @@ Sincerely,
                         const Text(
                           'Ready-to-Send Email Draft',
                           style: TextStyle(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w900,
                             fontSize: 14,
                             color: AppColors.textPrimary,
                           ),
@@ -339,15 +333,12 @@ Sincerely,
                 child: Container(
                   height: 52,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.primary, AppColors.primaryHover],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
+                    color: AppColors.textPrimary,
                     borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.goldBorder, width: 1.2),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 14,
                         offset: const Offset(0, 4),
                       ),
@@ -356,12 +347,12 @@ Sincerely,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(LucideIcons.clipboardCopy, size: 18, color: Colors.white),
+                      Icon(LucideIcons.clipboardCopy, size: 18, color: AppColors.primaryLight),
                       SizedBox(width: 8),
                       Text(
                         'Copy Email to Clipboard',
                         style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
                           fontSize: 14,
                           color: Colors.white,
                         ),
@@ -375,7 +366,7 @@ Sincerely,
 
           // Tab 2: Notice Buyout Calculator
           ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
             children: [
               Container(
                 padding: const EdgeInsets.all(18),
@@ -383,12 +374,12 @@ Sincerely,
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.border,
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -400,7 +391,7 @@ Sincerely,
                     const Text(
                       'Notice Buyout Estimator',
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w900,
                         fontSize: 16,
                         color: AppColors.textPrimary,
                       ),
@@ -408,21 +399,21 @@ Sincerely,
                     const SizedBox(height: 4),
                     const Text(
                       'Calculate the approximate settlement amount if your new employer offers to buy out your notice period.',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 18),
 
                     TextField(
                       controller: _monthlySalaryController,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w700),
                       decoration: InputDecoration(
                         labelText: 'Monthly Gross / Basic Pay (₹)',
                         labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         prefixText: '₹ ',
                         prefixStyle: const TextStyle(
                           color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
                         ),
                         filled: true,
                         fillColor: AppColors.background,
@@ -454,7 +445,7 @@ Sincerely,
                           '$_buyoutDays Days',
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
-                            color: AppColors.primaryLight,
+                            color: AppColors.primaryDark,
                             fontSize: 14,
                           ),
                         ),
@@ -480,19 +471,15 @@ Sincerely,
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AppColors.goldChampagne,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.4),
+                    color: AppColors.goldBorder,
                     width: 1.4,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryGlow.withValues(alpha: 0.2),
+                      color: AppColors.primaryGlow.withValues(alpha: 0.15),
                       blurRadius: 18,
                       offset: const Offset(0, 6),
                     ),
@@ -507,7 +494,7 @@ Sincerely,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.1,
-                        color: AppColors.primaryLight,
+                        color: AppColors.primaryDark,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -526,6 +513,7 @@ Sincerely,
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
                         height: 1.4,
                       ),
                     ),

@@ -29,19 +29,19 @@ class ExitPostCard extends ConsumerWidget {
           border: Border.all(
             color: post.isLayoff
                 ? AppColors.redFlag.withValues(alpha: 0.45)
-                : Colors.white.withValues(alpha: 0.08),
+                : AppColors.goldBorder.withValues(alpha: 0.45),
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.35),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
             if (post.isLayoff)
               BoxShadow(
-                color: AppColors.redFlagGlow.withValues(alpha: 0.1),
-                blurRadius: 16,
+                color: AppColors.redFlagGlow.withValues(alpha: 0.15),
+                blurRadius: 14,
                 offset: const Offset(0, 0),
               ),
           ],
@@ -57,10 +57,10 @@ class ExitPostCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
+                      color: AppColors.goldChampagne,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: AppColors.goldBorder.withValues(alpha: 0.7),
                         width: 1.0,
                       ),
                     ),
@@ -72,14 +72,14 @@ class ExitPostCard extends ConsumerWidget {
                           size: 13,
                           color: post.isVerifiedWorkEmail
                               ? AppColors.emeraldVerified
-                              : AppColors.textSecondary,
+                              : AppColors.primaryDark,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           post.companyName,
                           style: const TextStyle(
                             fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                             letterSpacing: -0.2,
                             color: AppColors.textPrimary,
                           ),
@@ -94,7 +94,7 @@ class ExitPostCard extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: AppColors.redFlagBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.redFlag.withValues(alpha: 0.4)),
+                        border: Border.all(color: AppColors.redFlagBorder),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -121,7 +121,7 @@ class ExitPostCard extends ConsumerWidget {
                         color: AppColors.emeraldBg,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.emeraldVerified.withValues(alpha: 0.4),
+                          color: AppColors.emeraldBorder,
                         ),
                       ),
                       child: Row(
@@ -146,7 +146,7 @@ class ExitPostCard extends ConsumerWidget {
                     post.timeAgo,
                     style: const TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textTertiary,
                     ),
                   ),
@@ -159,7 +159,7 @@ class ExitPostCard extends ConsumerWidget {
                 post.role,
                 style: const TextStyle(
                   fontSize: 17,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
                   letterSpacing: -0.4,
                 ),
@@ -173,20 +173,20 @@ class ExitPostCard extends ConsumerWidget {
                 children: [
                   _MetricPill(
                     label: post.primaryReason,
-                    bgColor: AppColors.primaryGlow.withValues(alpha: 0.15),
-                    textColor: AppColors.primaryLight,
+                    bgColor: AppColors.goldChampagne,
+                    textColor: AppColors.primaryDark,
                     icon: LucideIcons.sparkles,
                   ),
                   _MetricPill(
                     label: '${post.noticeDays}d Notice',
-                    bgColor: AppColors.amberGlow.withValues(alpha: 0.15),
+                    bgColor: AppColors.amberBg,
                     textColor: AppColors.amberNotice,
                     icon: LucideIcons.clock,
                   ),
                   if (post.hikePercent > 0)
                     _MetricPill(
                       label: '+${post.hikePercent}% Next Offer',
-                      bgColor: AppColors.emeraldGlow.withValues(alpha: 0.15),
+                      bgColor: AppColors.emeraldBg,
                       textColor: AppColors.emeraldVerified,
                       icon: LucideIcons.trendingUp,
                     ),
@@ -199,16 +199,16 @@ class ExitPostCard extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: AppColors.backgroundSecondary,
                     borderRadius: BorderRadius.circular(14),
                     border: Border(
                       left: BorderSide(
                         color: post.isLayoff ? AppColors.redFlag : AppColors.primary,
-                        width: 3.0,
+                        width: 3.5,
                       ),
-                      top: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-                      right: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+                      top: BorderSide(color: AppColors.borderLight),
+                      right: BorderSide(color: AppColors.borderLight),
+                      bottom: BorderSide(color: AppColors.borderLight),
                     ),
                   ),
                   child: Column(
@@ -216,14 +216,14 @@ class ExitPostCard extends ConsumerWidget {
                     children: [
                       Row(
                         children: const [
-                          Icon(LucideIcons.quote, size: 12, color: AppColors.textTertiary),
+                          Icon(LucideIcons.quote, size: 12, color: AppColors.primaryDark),
                           SizedBox(width: 5),
                           Text(
                             'THE TURNING POINT',
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.textTertiary,
+                              color: AppColors.primaryDark,
                               letterSpacing: 0.8,
                             ),
                           ),
@@ -236,6 +236,7 @@ class ExitPostCard extends ConsumerWidget {
                           fontSize: 12.5,
                           color: AppColors.textPrimary,
                           fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
                           height: 1.4,
                         ),
                       ),
@@ -245,8 +246,8 @@ class ExitPostCard extends ConsumerWidget {
                           '↳ ${post.employeeReply!}',
                           style: const TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryLight,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryDark,
                             height: 1.35,
                           ),
                         ),
@@ -265,6 +266,7 @@ class ExitPostCard extends ConsumerWidget {
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13.5,
+                  fontWeight: FontWeight.w500,
                   height: 1.5,
                 ),
               ),
@@ -292,13 +294,13 @@ class ExitPostCard extends ConsumerWidget {
                       Text(
                         'Read full story',
                         style: TextStyle(
-                          color: AppColors.primaryLight,
-                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
                           fontSize: 12,
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(LucideIcons.arrowRight, size: 13, color: AppColors.primaryLight),
+                      Icon(LucideIcons.arrowRight, size: 13, color: AppColors.textPrimary),
                     ],
                   ),
                 ],
@@ -345,7 +347,7 @@ class _MetricPill extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 11,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               color: textColor,
             ),
           ),
@@ -376,10 +378,10 @@ class _ReactionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5.5),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: AppColors.surfaceHighlight,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.goldBorder.withValues(alpha: 0.5),
             width: 1.0,
           ),
         ),
@@ -401,7 +403,7 @@ class _ReactionButton extends StatelessWidget {
               '$count',
               style: const TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w900,
                 color: AppColors.textPrimary,
               ),
             ),

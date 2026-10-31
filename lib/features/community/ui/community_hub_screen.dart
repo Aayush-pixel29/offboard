@@ -39,14 +39,14 @@ class CommunityHubScreen extends ConsumerWidget {
                 fontSize: 8.5,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,
-                color: AppColors.textTertiary,
+                color: AppColors.primaryDark,
               ),
             ),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
         children: [
           // 1. Networking Intro Banner
           Container(
@@ -55,13 +55,13 @@ class CommunityHubScreen extends ConsumerWidget {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.goldBorder.withValues(alpha: 0.6),
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryGlow.withValues(alpha: 0.1),
-                  blurRadius: 16,
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 14,
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -71,14 +71,11 @@ class CommunityHubScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.primary, AppColors.purpleAccent],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.goldBorder),
                   ),
-                  child: const Icon(LucideIcons.users, color: Colors.white, size: 22),
+                  child: const Icon(LucideIcons.users, color: AppColors.primaryDark, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -90,7 +87,7 @@ class CommunityHubScreen extends ConsumerWidget {
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14.5,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       SizedBox(height: 3),
@@ -99,6 +96,7 @@ class CommunityHubScreen extends ConsumerWidget {
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
+                          fontWeight: FontWeight.w500,
                           height: 1.4,
                         ),
                       ),
@@ -118,7 +116,7 @@ class CommunityHubScreen extends ConsumerWidget {
                 'Active Peer Circles',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.3,
                   color: AppColors.textPrimary,
                 ),
@@ -126,16 +124,16 @@ class CommunityHubScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
+                  color: AppColors.goldChampagne,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border: Border.all(color: AppColors.goldBorder),
                 ),
                 child: Text(
                   '${cohorts.length} Groups',
                   style: const TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryDark,
                   ),
                 ),
               ),
@@ -156,7 +154,7 @@ class CommunityHubScreen extends ConsumerWidget {
                 'Open Referral Drops',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.3,
                   color: AppColors.textPrimary,
                 ),
@@ -166,7 +164,7 @@ class CommunityHubScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           const Text(
             'Alumni who transitioned to new companies and are offering direct internal job referrals.',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
 
@@ -194,12 +192,12 @@ class _CohortCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.border,
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 14,
               offset: const Offset(0, 4),
             ),
@@ -215,9 +213,9 @@ class _CohortCard extends StatelessWidget {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(color: AppColors.goldBorder),
                   ),
                   child: Text(cohort.icon, style: const TextStyle(fontSize: 20)),
                 ),
@@ -229,7 +227,7 @@ class _CohortCard extends StatelessWidget {
                       Text(
                         cohort.title,
                         style: const TextStyle(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                           fontSize: 14.5,
                           letterSpacing: -0.2,
                           color: AppColors.textPrimary,
@@ -239,7 +237,7 @@ class _CohortCard extends StatelessWidget {
                         cohort.subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -247,20 +245,21 @@ class _CohortCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.goldBorder),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(LucideIcons.users, size: 11, color: AppColors.primaryLight),
+                      const Icon(LucideIcons.users, size: 11, color: AppColors.primaryDark),
                       const SizedBox(width: 4),
                       Text(
                         '${cohort.activeMembers}',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primaryLight,
+                          color: AppColors.primaryDark,
                         ),
                       ),
                     ],
@@ -272,9 +271,9 @@ class _CohortCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: AppColors.backgroundSecondary,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: AppColors.borderLight),
               ),
               child: Row(
                 children: [
@@ -305,13 +304,13 @@ class _CohortCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
+                        color: AppColors.surfaceHighlight,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Text(
                         t,
-                        style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                       ),
                     );
                   }).toList(),
@@ -348,12 +347,12 @@ class _ReferralDropTile extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.border,
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -370,7 +369,7 @@ class _ReferralDropTile extends StatelessWidget {
                   color: AppColors.emeraldBg,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppColors.emeraldVerified.withValues(alpha: 0.4),
+                    color: AppColors.emeraldBorder,
                   ),
                 ),
                 child: Text(
@@ -398,9 +397,9 @@ class _ReferralDropTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.amberGlow.withValues(alpha: 0.15),
+                  color: AppColors.amberBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.amberNotice.withValues(alpha: 0.3)),
+                  border: Border.all(color: AppColors.amberBorder),
                 ),
                 child: Text(
                   '${referral.referralSlotsLeft} Slots Open',
@@ -417,7 +416,7 @@ class _ReferralDropTile extends StatelessWidget {
           Text(
             'Hiring: ${referral.hiringRoles}',
             style: const TextStyle(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
               fontSize: 14.5,
               color: AppColors.textPrimary,
             ),
@@ -425,7 +424,7 @@ class _ReferralDropTile extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Requirements: ${referral.criteria}',
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 14),
           Row(
@@ -438,7 +437,7 @@ class _ReferralDropTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.emeraldVerified,
                   ),
                 ),
@@ -455,15 +454,12 @@ class _ReferralDropTile extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.primary, AppColors.primaryHover],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
+                    color: AppColors.textPrimary,
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.goldBorder),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -472,13 +468,13 @@ class _ReferralDropTile extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Icon(LucideIcons.send, size: 12, color: Colors.white),
+                      Icon(LucideIcons.send, size: 12, color: AppColors.primaryLight),
                       SizedBox(width: 6),
                       Text(
                         'Request Referral',
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
                           color: Colors.white,
                         ),
                       ),

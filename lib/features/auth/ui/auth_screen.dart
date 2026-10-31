@@ -6,7 +6,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/services/resend_service.dart';
 import '../../../core/services/supabase_auth_service.dart';
 import '../../../core/widgets/bouncy_tap.dart';
-import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/mesh_scaffold.dart';
 import '../providers/auth_provider.dart';
 import '../../navigation/main_nav_wrapper.dart';
@@ -133,7 +132,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       );
 
       if (isValid) {
-        final domain = _detectedDomain ?? 'guest.com';
+        final domain = _detectedDomain ?? 'member.com';
         final alias = _generateFriendlyAlias(domain);
 
         await ref.read(authProvider.notifier).setCorporateSession(
@@ -177,26 +176,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     }
   }
 
-  Future<void> _loginWithQuickDemo({
-    required String name,
-    required String email,
-    required String company,
-    required String avatar,
-  }) async {
-    await ref.read(authProvider.notifier).setGoogleSession(
-          name: name,
-          email: email,
-          companyDomain: company,
-          avatarUrl: avatar,
-        );
-
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
-      );
-    }
-  }
-
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleSigningIn = true);
     try {
@@ -226,7 +205,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           children: const [
             Icon(LucideIcons.globe, color: Color(0xFF4285F4), size: 22),
             SizedBox(width: 10),
-            Text('Google Sign-In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+            Text(
+              'Google Sign-In',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -234,50 +220,45 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Connect your Google Account to automatically populate your verified name and profile picture.',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+              'Sign in securely with your Google Account to access verified company circles, track layoff alerts, and request alumni referrals.',
+              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.45),
             ),
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.goldChampagne,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.goldBorder),
               ),
-              child: const Text(
-                'Supabase Console → Authentication → URL Configuration\n• Site URL: https://aayush-pixel29.github.io/offboard/\n• Redirect URLs: https://aayush-pixel29.github.io/offboard/**',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.35),
+              child: Text(
+                'Supabase Auth Redirect:\n• Live URL: https://aayush-pixel29.github.io/offboard/',
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.primaryDark,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Or test instantly with 1-tap demo:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primaryLight),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
+            child: const Text('Close', style: TextStyle(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.textPrimary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(ctx);
-              await _loginWithQuickDemo(
-                name: 'Aayush Shelar',
-                email: 'shelaraayush535@gmail.com',
-                company: 'techcorp.io',
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-              );
+              _handleGoogleSignIn();
             },
-            child: const Text('1-Tap Demo Mode', style: TextStyle(fontWeight: FontWeight.w700)),
+            child: const Text('Retry Sign-In', style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -291,34 +272,34 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
+            constraints: const BoxConstraints(maxWidth: 460),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Top Tagline Pill
+                // Top Gold Tagline Pill
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGlow.withValues(alpha: 0.15),
+                    color: AppColors.goldChampagne,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.35),
+                      color: AppColors.goldBorder,
                       width: 1.0,
                     ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Icon(LucideIcons.sparkles, size: 13, color: AppColors.primaryLight),
+                      Icon(LucideIcons.sparkles, size: 13, color: AppColors.primaryDark),
                       SizedBox(width: 6),
                       Text(
                         'THE WORKPLACE TRUTH NETWORK',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 1.2,
-                          color: AppColors.primaryLight,
+                          letterSpacing: 1.1,
+                          color: AppColors.primaryDark,
                         ),
                       ),
                     ],
@@ -333,16 +314,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.purpleAccent],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.4),
-                            blurRadius: 18,
+                            color: AppColors.primaryGlow,
+                            blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
                         ],
@@ -374,14 +351,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Bento Grid Feature Showcase (ThreeUI & Let's Code Style)
+                // Bento Grid Feature Showcase (Bright Aesthetic Ivory & Gold)
                 _buildBentoShowcase(),
                 const SizedBox(height: 24),
 
-                // Glassmorphic Sign-In Card (Apple HIG)
-                GlassCard(
+                // Pure White Sign-In Card with Warm Golden Border
+                Container(
                   padding: const EdgeInsets.all(22),
-                  borderRadius: 24,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: AppColors.goldBorder.withValues(alpha: 0.6),
+                      width: 1.4,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -391,17 +382,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         child: Container(
                           height: 52,
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceElevated,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.12),
+                              color: AppColors.borderBold,
                               width: 1.2,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
+                                color: Colors.black.withValues(alpha: 0.04),
                                 blurRadius: 10,
-                                offset: const Offset(0, 3),
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -424,7 +415,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                     Text(
                                       'Continue with Google',
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w800,
                                         fontSize: 14.5,
                                         color: AppColors.textPrimary,
                                       ),
@@ -459,7 +450,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                        style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                         decoration: InputDecoration(
                           hintText: 'Enter your work or personal email',
                           hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 13.5),
@@ -477,7 +468,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.primaryLight, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
                           ),
                         ),
                       ),
@@ -489,15 +480,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           child: Container(
                             height: 50,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppColors.primary, AppColors.primaryHover],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
+                              color: AppColors.textPrimary, // Jet Black Primary
                               borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppColors.goldBorder, width: 1.2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                  color: Colors.black.withValues(alpha: 0.15),
                                   blurRadius: 14,
                                   offset: const Offset(0, 4),
                                 ),
@@ -513,7 +501,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                   : const Text(
                                       'Send Sign-In Code',
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w800,
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),
@@ -529,7 +517,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 6,
                             color: AppColors.textPrimary,
                           ),
@@ -559,7 +547,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               borderRadius: BorderRadius.circular(14),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.emeraldVerified.withValues(alpha: 0.3),
+                                  color: AppColors.emeraldGlow,
                                   blurRadius: 14,
                                   offset: const Offset(0, 4),
                                 ),
@@ -575,7 +563,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                   : const Text(
                                       'Confirm & Enter',
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w800,
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),
@@ -589,60 +577,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Quick Demo Profiles Bar
-                Column(
-                  children: [
-                    const Text(
-                      'OR TEST INSTANT DEMO PROFILES',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.1,
-                        color: AppColors.textTertiary,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _buildDemoChip(
-                          label: '⚡ Ex-Google Lead',
-                          name: 'Priya Sharma',
-                          email: 'priya.sharma@google.com',
-                          company: 'google.com',
-                          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
-                        ),
-                        _buildDemoChip(
-                          label: '💼 Ex-Amazon SDE',
-                          name: 'Rohan Verma',
-                          email: 'rohan.v@amazon.com',
-                          company: 'amazon.com',
-                          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-                        ),
-                        _buildDemoChip(
-                          label: '🚀 Ex-Fintech PM',
-                          name: 'Ananya Rao',
-                          email: 'ananya@fintechcorp.io',
-                          company: 'fintechcorp.io',
-                          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-
-                // Guest Access
+                // Guest Explore Pill
                 BouncyTap(
                   onTap: _handleGuestAccess,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.6),
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.borderLight),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -653,7 +596,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           'Explore feed as Guest (Read-Only)',
                           style: TextStyle(
                             fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -670,46 +613,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     Icon(LucideIcons.shieldCheck, size: 14, color: AppColors.emeraldVerified),
                     SizedBox(width: 6),
                     Text(
-                      'Zero identity leak. Post verified or completely anonymous.',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
+                      'Zero identity leak. Post with your name or anonymously.',
+                      style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDemoChip({
-    required String label,
-    required String name,
-    required String email,
-    required String company,
-    required String avatar,
-  }) {
-    return BouncyTap(
-      onTap: () => _loginWithQuickDemo(
-        name: name,
-        email: email,
-        company: company,
-        avatar: avatar,
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.borderBold, width: 1.0),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
           ),
         ),
       ),
@@ -730,7 +640,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 title: 'Live Layoff Radar',
                 subtitle: '12 tech hubs monitored',
                 metric: 'Real-time alert',
-                gradient: const [Color(0x334C0519), Color(0x1A111623)],
+                bgColor: AppColors.redFlagBg,
+                borderColor: AppColors.redFlagBorder,
               ),
             ),
             const SizedBox(width: 10),
@@ -742,7 +653,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 title: 'Alumni Network',
                 subtitle: 'Direct peer fast-track',
                 metric: '840+ Active offers',
-                gradient: const [Color(0x33064E3B), Color(0x1A111623)],
+                bgColor: AppColors.emeraldBg,
+                borderColor: AppColors.emeraldBorder,
               ),
             ),
           ],
@@ -758,7 +670,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 title: '90-Day Notice Survival',
                 subtitle: 'Buyout & legal templates',
                 metric: '+58% Avg hike',
-                gradient: const [Color(0x33451A03), Color(0x1A111623)],
+                bgColor: AppColors.amberBg,
+                borderColor: AppColors.amberBorder,
               ),
             ),
             const SizedBox(width: 10),
@@ -770,7 +683,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 title: 'Zero Identity Leaks',
                 subtitle: 'Verified without names',
                 metric: '100% Safe',
-                gradient: const [Color(0x33082F49), Color(0x1A111623)],
+                bgColor: AppColors.goldChampagne,
+                borderColor: AppColors.goldBorder,
               ),
             ),
           ],
@@ -786,27 +700,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     required String title,
     required String subtitle,
     required String metric,
-    required List<Color> gradient,
+    required Color bgColor,
+    required Color borderColor,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        gradient: LinearGradient(
-          colors: gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.border,
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -819,8 +729,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.2),
+                  color: bgColor,
                   borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: borderColor.withValues(alpha: 0.5)),
                 ),
                 child: Text(
                   tag,
@@ -842,7 +753,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 12.5,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
             ),
           ),
@@ -853,21 +764,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 11,
-              color: AppColors.textTertiary,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: bgColor,
               borderRadius: BorderRadius.circular(5),
             ),
             child: Text(
               metric,
               style: TextStyle(
                 fontSize: 10,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 color: accentColor,
               ),
             ),

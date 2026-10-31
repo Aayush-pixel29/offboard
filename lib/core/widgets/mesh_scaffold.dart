@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
-/// ThreeUI & Bento Atmospheric Mesh Background Scaffold
-/// Implements deep obsidian canvas with multi-layered radial ambient glow
+/// Bright Luxury Ivory & Warm Golden Atmospheric Mesh Background
 class MeshScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
@@ -31,11 +30,11 @@ class MeshScaffold extends StatelessWidget {
       bottomNavigationBar: bottomNavigationBar,
       body: Stack(
         children: [
-          // Ambient Radial Mesh Glow 1: Top Hero Indigo Glow
+          // Ambient Warm Golden Radial Glow 1 (Top Hero)
           Positioned(
-            top: -100,
-            left: size.width * 0.1,
-            right: size.width * 0.1,
+            top: -120,
+            left: size.width * 0.05,
+            right: size.width * 0.05,
             height: 380,
             child: IgnorePointer(
               child: Container(
@@ -43,18 +42,18 @@ class MeshScaffold extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primaryGlow.withValues(alpha: 0.18),
-                      AppColors.purpleGlow.withValues(alpha: 0.08),
+                      AppColors.primaryLight.withValues(alpha: 0.14),
+                      AppColors.primaryGlow.withValues(alpha: 0.05),
                       Colors.transparent,
                     ],
-                    stops: const [0.0, 0.5, 1.0],
+                    stops: const [0.0, 0.55, 1.0],
                   ),
                 ),
               ),
             ),
           ),
 
-          // Ambient Radial Mesh Glow 2: Bottom Cyan/Emerald Accent
+          // Ambient Champagne Glow 2 (Bottom Right)
           Positioned(
             bottom: -80,
             right: -60,
@@ -66,10 +65,10 @@ class MeshScaffold extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.cyanGlow.withValues(alpha: 0.12),
+                      AppColors.primaryLight.withValues(alpha: 0.08),
                       Colors.transparent,
                     ],
-                    stops: const [0.0, 0.9],
+                    stops: const [0.0, 0.85],
                   ),
                 ),
               ),
@@ -86,4 +85,3 @@ class MeshScaffold extends StatelessWidget {
     );
   }
 }
-

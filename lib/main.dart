@@ -6,6 +6,7 @@ import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/ui/auth_screen.dart';
+import 'features/onboarding/ui/onboarding_screen.dart';
 import 'features/navigation/main_nav_wrapper.dart';
 
 void main() async {
@@ -52,7 +53,7 @@ class NoticePeriodApp extends ConsumerWidget {
             )
           : session.isAuthenticated
               ? const MainNavigationWrapper()
-              : const AuthScreen(),
+              : const OnboardingScreen(),
     );
   }
 }

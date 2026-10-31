@@ -132,6 +132,55 @@ class ExitPostsNotifier extends Notifier<List<ExitPost>> {
       toxicAlertCount: 12,
       timeAgo: '8h ago',
     ),
+    const ExitPost(
+      id: '5',
+      companyName: 'Alphabet / Google',
+      role: 'Staff Systems Engineer',
+      tenureYears: 4.5,
+      noticeDays: 60,
+      currentNoticeDay: 60,
+      primaryReason: 'Global Restructuring & Cloud Realignment',
+      managerQuote:
+          '8:00 AM Automated Notification: "Your role in Core Systems has been impacted by structural alignment. SSO access suspended."',
+      employeeReply:
+          '8:20 AM to Team Signal group: "United with 8 colleagues, retained counsel, and negotiated accelerated vesting before signing release."',
+      storyBody:
+          'Nine of us on our infrastructure pod were impacted without prior notice. We immediately connected on private channels, reviewed severance terms together, and secured medical benefits extension for 6 months.',
+      survivalTip:
+          'Never sign the standard separation agreement on day 1. Review WARN Act protections, equity vest schedules, and band together with affected colleagues.',
+      hikePercent: 40,
+      isVerifiedWorkEmail: true,
+      isLayoff: true,
+      openToRefer: true,
+      validExitCount: 640,
+      dodgedBulletCount: 310,
+      toxicAlertCount: 22,
+      timeAgo: '12h ago',
+    ),
+    const ExitPost(
+      id: '6',
+      companyName: 'Quick-Commerce Unicorn',
+      role: 'Lead Growth Marketer',
+      tenureYears: 1.8,
+      noticeDays: 30,
+      currentNoticeDay: 18,
+      primaryReason: 'Midnight Burnout & Phantom Equity Dilution',
+      managerQuote:
+          '11:45 PM Slack ping: "Why is GMV in Indiranagar down 3% today? Need a root cause slide deck before 2 AM."',
+      employeeReply:
+          '11:55 PM: "Resignation submitted on Darwinbox. 30-day notice begins tomorrow; KT transition tracker shared."',
+      storyBody:
+          'Endured 80-hour workweeks with the carrot of pre-IPO ESOPs. The latest funding round diluted common stock by 50% while workload doubled. Transitioned into a B2B SaaS with guaranteed cash comp.',
+      survivalTip:
+          'Prioritize real cash in hand over unvested paper equity. During notice period, turn off work notifications after 6 PM and prep case studies.',
+      hikePercent: 65,
+      isVerifiedWorkEmail: true,
+      openToRefer: true,
+      validExitCount: 472,
+      dodgedBulletCount: 230,
+      toxicAlertCount: 16,
+      timeAgo: '1d ago',
+    ),
   ];
 
   Future<void> addPost(ExitPost post) async {
